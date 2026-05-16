@@ -1,0 +1,707 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
+import { Menu, X, ArrowRight, ArrowUpRight } from 'lucide-react';
+
+// ==========================================
+// GLOBALS & STYLES
+// ==========================================
+// Injecting Google Fonts and Base Styles for the Editorial Look
+const GlobalStyles = () => (
+  <style>{`
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap');
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --bg-off-white: #F7F5F1;
+      --primary-olive: #324D3F;
+      --deep-olive: #2E473A;
+      --champagne: #D2AB7C;
+      --warm-nude: #E8DDD2;
+      --text-soft-black: #1A1A1A;
+    }
+
+    body {
+      background-color: var(--bg-off-white);
+      color: var(--text-soft-black);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .font-serif {
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    ::selection {
+      background-color: var(--primary-olive);
+      color: var(--bg-off-white);
+    }
+
+    /* Hide scrollbar for the custom carousel */
+    .hide-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .hide-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    
+    input:-webkit-autofill,
+    textarea:-webkit-autofill {
+      -webkit-box-shadow: 0 0 0 50px var(--bg-off-white) inset;
+      -webkit-text-fill-color: var(--text-soft-black);
+    }
+  `}</style>
+);
+
+// ==========================================
+// DATA & CONSTANTS
+// ==========================================
+const NICHES = [
+  {
+    id: 1,
+    title: "Estética Avançada",
+    desc: "Nude, luxo clean e sensualidade refinada.",
+    color: "from-[#E8DDD2] to-[#D5C6B8]",
+    tag: "Beleza"
+  },
+  {
+    id: 2,
+    title: "Advocacia",
+    desc: "Autoridade inquestionável em tons sóbrios.",
+    color: "from-[#EBE9E4] to-[#D1CFC9]",
+    tag: "Direito"
+  },
+  {
+    id: 3,
+    title: "Psicologia",
+    desc: "Acolhimento, respiro e tons acinzentados.",
+    color: "from-[#F0F2F0] to-[#DFE3E0]",
+    tag: "Saúde"
+  },
+  {
+    id: 4,
+    title: "Nutrição",
+    desc: "Essência natural, clean e orgânica.",
+    color: "from-[#E9EDDD] to-[#DCE3CB]",
+    tag: "Saúde"
+  },
+  {
+    id: 5,
+    title: "Lash Design",
+    desc: "Feminilidade, precisão e elegância.",
+    color: "from-[#F5E6E6] to-[#E8D5D5]",
+    tag: "Beleza"
+  },
+  {
+    id: 6,
+    title: "Odontologia",
+    desc: "Precisão clínica com estética premium.",
+    color: "from-[#EAEFF2] to-[#D8E1E6]",
+    tag: "Saúde"
+  }
+];
+
+const SERVICES = [
+  "Posicionamento estratégico",
+  "Branding visual & Identidade",
+  "Direção criativa de conteúdo",
+  "Presença digital sofisticada",
+  "Produção visual e fotografia",
+  "Planejamento de comunicação"
+];
+
+// ==========================================
+// HELPER COMPONENTS
+// ==========================================
+const FadeIn = ({ children, delay = 0, className = "", direction = "up" }) => {
+  const directions = {
+    up: { y: 40, opacity: 0 },
+    down: { y: -40, opacity: 0 },
+    left: { x: 40, opacity: 0 },
+    right: { x: -40, opacity: 0 },
+    none: { opacity: 0 }
+  };
+
+  return (
+    <motion.div
+      initial={directions[direction]}
+      whileInView={{ x: 0, y: 0, opacity: 1 }}
+      viewport={{ once: true, margin: "-10%" }}
+      // Easing super suave: easeOutQuint
+      transition={{ duration: 1.2, delay: delay, ease: [0.22, 1, 0.36, 1] }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const FloatingWhatsApp = () => {
+  return (
+    <motion.a
+      href="https://wa.me/5531994513444"
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, scale: 0.5, y: 20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ delay: 1.5, duration: 0.6, type: "spring" }}
+      className="fixed bottom-6 right-6 md:bottom-10 md:right-10 z-[100] flex items-center justify-center w-14 h-14 bg-[#324D3F] text-[#F7F5F1] rounded-full shadow-2xl shadow-[#324D3F]/40 hover:bg-[#D2AB7C] hover:text-[#1A1A1A] hover:-translate-y-2 transition-all duration-500 group"
+      aria-label="Contato via WhatsApp"
+    >
+      {/* Official WhatsApp Icon */}
+      <svg 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="28" 
+        height="28" 
+        viewBox="0 0 24 24" 
+        fill="currentColor"
+        className="transform group-hover:scale-110 transition-transform duration-500"
+      >
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+      </svg>
+      {/* Tooltip on hover (Desktop only) */}
+      <span className="absolute right-full mr-4 bg-[#1A1A1A] text-[#F7F5F1] text-xs py-2 px-4 rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-500 w-max hidden md:block whitespace-nowrap font-light tracking-wide">
+        Fale com a gente
+      </span>
+    </motion.a>
+  );
+};
+
+// ==========================================
+// MAIN COMPONENTS
+// ==========================================
+const Header = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  return (
+    <>
+      <header 
+        className={`fixed top-0 w-full z-50 transition-all duration-700 ease-in-out ${
+          isScrolled ? 'bg-[#F7F5F1]/80 backdrop-blur-md py-4 shadow-sm' : 'bg-transparent py-8'
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+          {/* Logo - Agora com hover sensível editorial */}
+          <motion.a 
+            href="#"
+            initial={{ opacity: 0 }} 
+            animate={{ opacity: 1 }} 
+            whileHover={{ 
+              letterSpacing: "0.25em", 
+              color: "#D2AB7C",
+              scale: 1.02
+            }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
+            className="font-serif text-2xl tracking-[0.1em] text-[#324D3F] uppercase origin-left"
+          >
+            AJHUB
+          </motion.a>
+
+          {/* Desktop Nav */}
+          <nav className="hidden md:flex items-center gap-10">
+            {['Sobre', 'Manifesto', 'Nichos', 'Serviços'].map((item, i) => (
+              <a 
+                key={i} 
+                href={`#${item.toLowerCase()}`}
+                className="text-xs uppercase tracking-[0.2em] text-gray-500 hover:text-[#324D3F] transition-colors duration-500 relative group"
+              >
+                {item}
+                <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-[#324D3F] transition-all duration-500 group-hover:w-full"></span>
+              </a>
+            ))}
+            <a 
+              href="#contato"
+              className="text-xs uppercase tracking-[0.2em] text-[#324D3F] border-b border-[#324D3F]/30 pb-1 hover:border-[#324D3F] transition-all duration-500"
+            >
+              Contato
+            </a>
+          </nav>
+
+          {/* Mobile Toggle */}
+          <button 
+            className="md:hidden text-[#324D3F] hover:text-[#D2AB7C] transition-colors duration-300"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Abrir menu"
+          >
+            <Menu strokeWidth={1.5} size={28} />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile Menu Fullscreen */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: '-100%' }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: '-100%' }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[60] bg-[#E8DDD2] flex flex-col justify-center items-center"
+          >
+            <button 
+              className="absolute top-6 right-6 text-[#324D3F] p-2 hover:text-[#D2AB7C] transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+              aria-label="Fechar menu"
+            >
+              <X strokeWidth={1.5} size={32} />
+            </button>
+            <nav className="flex flex-col items-center gap-8">
+              {['Sobre', 'Manifesto', 'Nichos', 'Serviços', 'Contato'].map((item, i) => (
+                <motion.a
+                  key={i}
+                  href={`#${item.toLowerCase()}`}
+                  onClick={() => setMobileMenuOpen(false)}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + (i * 0.1), duration: 0.5 }}
+                  className="font-serif text-4xl text-[#324D3F] hover:text-[#D2AB7C] hover:tracking-wider transition-all duration-500"
+                >
+                  {item}
+                </motion.a>
+              ))}
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+const Hero = () => {
+  return (
+    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10">
+        <div className="max-w-4xl">
+          <FadeIn>
+            <span className="block text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6">
+              Posicionamento Premium
+            </span>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[1.1] text-[#324D3F] mb-8">
+              Estratégia visual para marcas que desejam ser percebidas.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.4} className="max-w-lg">
+            <p className="text-gray-500 font-light leading-relaxed md:text-lg">
+              Design, estética e comunicação orquestrados para transmitir autoridade silenciosa. 
+              Venda o seu valor sem precisar gritar.
+            </p>
+          </FadeIn>
+          
+          <FadeIn delay={0.6} className="mt-16">
+            <a href="#manifesto" className="inline-flex flex-col items-center gap-2 group">
+              <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-hover:text-[#D2AB7C] transition-colors duration-500">
+                Descubra
+              </span>
+              <div className="w-[1px] h-12 bg-gray-300 group-hover:bg-[#D2AB7C] transition-colors duration-500 origin-top animate-pulse" />
+            </a>
+          </FadeIn>
+        </div>
+      </div>
+      
+      {/* Decorative subtle background element - Agora com respiração "Ambient Animation" */}
+      <motion.div 
+        animate={{ 
+          scale: [1, 1.05, 1],
+          opacity: [0.3, 0.5, 0.3],
+          rotate: [0, 2, 0]
+        }}
+        transition={{ 
+          duration: 15, 
+          repeat: Infinity, 
+          ease: "easeInOut" 
+        }}
+        className="absolute right-0 top-1/4 w-[40vw] h-[60vh] bg-gradient-to-bl from-[#E8DDD2] to-[#D2AB7C]/30 blur-3xl -z-10 rounded-full" 
+      />
+    </section>
+  );
+};
+
+const Founder = () => {
+  // Lógica matemática para o efeito 3D ao mover o mouse
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  // useSpring suaviza o retorno da foto quando o mouse sai de cima
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+  // Limita a rotação máxima a 8 graus para manter a elegância
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["8deg", "-8deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-8deg", "8deg"]);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <section id="sobre" className="py-24 md:py-32 bg-[#F7F5F1] relative">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
+          
+          {/* Image Column - Editorial Style com Efeito 3D */}
+          <div className="lg:col-span-5 relative" style={{ perspective: "1200px" }}>
+            <FadeIn direction="right">
+              <motion.div 
+                onMouseMove={handleMouseMove}
+                onMouseLeave={handleMouseLeave}
+                style={{ 
+                  rotateX, 
+                  rotateY, 
+                  transformStyle: "preserve-3d"
+                }}
+                className="relative aspect-[3/4] w-full bg-[#E8DDD2] overflow-visible cursor-crosshair group"
+              >
+                {/* Moldura da foto afastada no eixo Z para gerar sombra e profundidade (parallax) */}
+                <div 
+                  className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none transition-all duration-700" 
+                  style={{ transform: "translateZ(30px)" }}
+                />
+                
+                {/* Foto */}
+                <img 
+                  src="https://images.unsplash.com/photo-1619895862022-09114b41f16f?q=80&w=800&auto=format&fit=crop" 
+                  alt="Juliana Almeida - Fundadora da AJHUB" 
+                  className="w-full h-full object-cover filter contrast-[0.95] sepia-[0.05] grayscale-[0.1]"
+                  style={{ transform: "translateZ(10px)" }}
+                />
+                
+                {/* Sombra interna para dar realismo à iluminação enquanto a foto mexe */}
+                <div 
+                  className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-overlay" 
+                  style={{ transform: "translateZ(15px)" }} 
+                />
+              </motion.div>
+            </FadeIn>
+          </div>
+
+          {/* Text Column */}
+          <div className="lg:col-span-7 flex flex-col justify-center">
+            <FadeIn>
+              <span className="text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6 block">
+                Por trás da marca
+              </span>
+              <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#324D3F] leading-tight mb-8">
+                Muito prazer, <br className="hidden md:block"/>
+                <span className="italic">Juliana Almeida.</span>
+              </h2>
+            </FadeIn>
+            
+            <FadeIn delay={0.2}>
+              <div className="space-y-6 text-gray-500 font-light leading-relaxed max-w-xl">
+                <p>
+                  Com expertise sólida em administração, marketing e comunicação, minha missão vai além do visual. É sobre decodificar a verdadeira essência da sua marca e traduzi-la em uma presença digital inesquecível.
+                </p>
+                <p>
+                  Acredito que o mercado de alto padrão não se conquista com excessos, mas com estratégia, intencionalidade e uma estética que comunica autoridade antes mesmo de qualquer palavra ser dita.
+                </p>
+                <p>
+                  A AJHUB nasceu para profissionais que sabem o valor que entregam, mas precisam que a sua imagem no digital reflita exatamente essa mesma excelência.
+                </p>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.4} className="mt-12">
+              <div className="font-serif text-3xl text-[#324D3F]/60 italic">
+                Juliana Almeida
+              </div>
+              <span className="text-[10px] uppercase tracking-[0.2em] text-[#D2AB7C] mt-2 block">
+                Fundadora & Diretora Criativa
+              </span>
+            </FadeIn>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Manifesto = () => {
+  return (
+    <section id="manifesto" className="py-32 md:py-48 bg-[#324D3F] text-[#F7F5F1] relative selection:bg-[#D2AB7C] selection:text-[#324D3F]">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-12 gap-12 items-center relative z-10">
+        <div className="md:col-span-5">
+          <FadeIn>
+            <h2 className="text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6">
+              O Manifesto
+            </h2>
+            <p className="font-light leading-relaxed text-[#F7F5F1]/80 max-w-sm">
+              Acreditamos que o verdadeiro luxo reside nos detalhes imperceptíveis.
+              Nossa abordagem une a precisão estratégica com a sensibilidade estética para construir legados digitais.
+            </p>
+          </FadeIn>
+        </div>
+        <div className="md:col-span-7 md:pl-12 border-t md:border-t-0 md:border-l border-[#F7F5F1]/20 pt-12 md:pt-0">
+          <FadeIn delay={0.2}>
+            <h3 className="font-serif text-4xl md:text-5xl lg:text-6xl leading-tight">
+              Imagem também comunica valor. <br/>
+              <span className="text-[#D2AB7C] italic">Marcas desejadas não gritam,</span> elas magnetizam.
+            </h3>
+          </FadeIn>
+        </div>
+      </div>
+      {/* Subtle overlay for depth */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 pointer-events-none" />
+    </section>
+  );
+};
+
+const NicheCarousel = () => {
+  const containerRef = useRef(null);
+  const [width, setWidth] = useState(0);
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setWidth(containerRef.current.scrollWidth - containerRef.current.offsetWidth);
+    }
+  }, []);
+
+  return (
+    <section id="nichos" className="py-32 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <FadeIn>
+          <h2 className="font-serif text-4xl md:text-5xl text-[#324D3F]">
+            Atuação por Nicho
+          </h2>
+        </FadeIn>
+        <FadeIn delay={0.2}>
+          <p className="text-gray-500 font-light max-w-sm text-sm">
+            Estéticas sob medida. Cada profissão exige uma comunicação visual única para gerar desejo e autoridade.
+            <br/><span className="text-xs mt-2 block italic text-gray-400">Deslize para explorar</span>
+          </p>
+        </FadeIn>
+      </div>
+
+      <div className="pl-6 md:pl-12 max-w-[100vw]">
+        <motion.div 
+          ref={containerRef}
+          className="cursor-grab active:cursor-grabbing overflow-hidden"
+          whileTap={{ cursor: "grabbing" }}
+        >
+          <motion.div 
+            drag="x"
+            dragConstraints={{ right: 0, left: -width }}
+            dragElastic={0.1}
+            dragTransition={{ bounceStiffness: 100, bounceDamping: 20 }}
+            className="flex gap-6 pr-12 w-max"
+          >
+            {NICHES.map((niche, index) => (
+              <motion.div 
+                key={niche.id}
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
+                className="w-[280px] md:w-[380px] flex-shrink-0 group"
+              >
+                {/* Visual Representation (Abstract/Gradient to ensure stability and luxury vibe) */}
+                <div className={`w-full h-[400px] md:h-[500px] bg-gradient-to-br ${niche.color} relative p-6 flex flex-col justify-between overflow-hidden transition-all duration-700 group-hover:shadow-2xl`}>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" />
+                  
+                  <span className="inline-block px-3 py-1 border border-[#324D3F]/20 text-[#324D3F] text-[10px] uppercase tracking-widest w-max backdrop-blur-sm relative z-10">
+                    {niche.tag}
+                  </span>
+                  
+                  <div className="relative z-10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <h3 className="font-serif text-3xl text-[#324D3F] mb-3">
+                      {niche.title}
+                    </h3>
+                    <p className="text-[#324D3F]/80 font-light text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                      {niche.desc}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
+const Services = () => {
+  return (
+    <section id="serviços" className="py-32 bg-[#E8DDD2] relative">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 flex flex-col lg:flex-row gap-16">
+        
+        <div className="lg:w-1/3">
+          <FadeIn className="sticky top-32">
+            <span className="text-xs uppercase tracking-[0.3em] text-[#324D3F] mb-4 block">
+              A Assinatura AJHUB
+            </span>
+            <h2 className="font-serif text-4xl md:text-5xl text-[#324D3F] leading-tight mb-6">
+              A arquitetura <br/>da sua marca.
+            </h2>
+            <p className="text-[#324D3F]/70 font-light leading-relaxed">
+              Não oferecemos pacotes engessados. Oferecemos soluções integradas para transformar o complexo em elegância pura.
+            </p>
+          </FadeIn>
+        </div>
+
+        <div className="lg:w-2/3">
+          <div className="border-t border-[#324D3F]/10">
+            {SERVICES.map((service, index) => (
+              <FadeIn key={index} delay={index * 0.1}>
+                <div className="group border-b border-[#324D3F]/10 py-8 md:py-10 flex items-center justify-between cursor-default hover:bg-[#324D3F]/[0.03] transition-colors duration-500 px-4 -mx-4 rounded-lg">
+                  <h3 className="font-serif text-2xl md:text-3xl text-[#324D3F] group-hover:text-[#D2AB7C] transition-colors duration-500">
+                    {service}
+                  </h3>
+                  <ArrowUpRight className="text-[#324D3F]/30 group-hover:text-[#D2AB7C] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-500" strokeWidth={1} size={28} />
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer id="contato" className="bg-[#1A1A1A] text-[#F7F5F1] pt-32 pb-12 selection:bg-[#324D3F] selection:text-[#F7F5F1]">
+      <div className="max-w-7xl mx-auto px-6 md:px-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-32">
+          
+          {/* Contact Info */}
+          <div>
+            <FadeIn>
+              <h2 className="font-serif text-5xl md:text-7xl mb-8 leading-tight">
+                Vamos elevar <br/><span className="text-[#D2AB7C]">seu padrão?</span>
+              </h2>
+              <p className="text-gray-400 font-light max-w-sm mb-12">
+                Dê o primeiro passo para uma presença digital que reflete o real valor do seu trabalho.
+              </p>
+              <div className="flex gap-6 mt-8">
+                <a 
+                  href="https://wa.me/5531994513444" 
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-gray-700 text-[#F7F5F1] hover:border-[#D2AB7C] hover:text-[#D2AB7C] hover:bg-[#D2AB7C]/5 transition-all duration-500 text-xs uppercase tracking-[0.2em] group"
+                >
+                  <span>Chamar no WhatsApp</span>
+                  <ArrowUpRight size={16} strokeWidth={1} className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" />
+                </a>
+              </div>
+            </FadeIn>
+          </div>
+
+          {/* Minimalist Form */}
+          <div>
+            <FadeIn delay={0.2}>
+              <form className="space-y-10" onSubmit={(e) => e.preventDefault()}>
+                <div className="relative group">
+                  <input 
+                    type="text" 
+                    id="name"
+                    required
+                    className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent"
+                    placeholder="Seu nome"
+                  />
+                  <label htmlFor="name" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
+                    Nome Completo
+                  </label>
+                </div>
+                
+                <div className="relative group">
+                  <input 
+                    type="email" 
+                    id="email"
+                    required
+                    className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent"
+                    placeholder="Seu email"
+                  />
+                  <label htmlFor="email" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
+                    E-mail Profissional
+                  </label>
+                </div>
+
+                <div className="relative group">
+                  <textarea 
+                    id="message"
+                    required
+                    rows={1}
+                    className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent resize-none min-h-[100px]"
+                    placeholder="Sua mensagem"
+                  ></textarea>
+                  <label htmlFor="message" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
+                    Conte-nos sobre o seu projeto
+                  </label>
+                </div>
+
+                <button 
+                  type="submit"
+                  className="group flex items-center gap-4 text-[#F7F5F1] hover:text-[#D2AB7C] transition-colors duration-500 uppercase tracking-widest text-xs pt-4"
+                >
+                  <span>Enviar Mensagem</span>
+                  <ArrowRight size={16} strokeWidth={1.5} className="transform group-hover:translate-x-2 transition-transform duration-500" />
+                </button>
+              </form>
+            </FadeIn>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-light">
+          <p>© {new Date().getFullYear()} AJHUB. Todos os direitos reservados.</p>
+          <div className="flex gap-6">
+            <a href="#" className="hover:text-[#F7F5F1] transition-colors">Política de Privacidade</a>
+            <a href="#" className="hover:text-[#F7F5F1] transition-colors">Termos de Uso</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+// ==========================================
+// MAIN APP COMPONENT
+// ==========================================
+export default function App() {
+  return (
+    <div className="min-h-screen relative w-full">
+      <GlobalStyles />
+      <Header />
+      
+      <main>
+        <Hero />
+        <Founder />
+        <Manifesto />
+        <NicheCarousel />
+        <Services />
+      </main>
+
+      <Footer />
+      <FloatingWhatsApp />
+    </div>
+  );
+}
