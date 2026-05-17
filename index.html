@@ -3,18 +3,25 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>JAHUB</title>
-  <meta name="description" content="Estratégia visual para marcas que desejam ser percebidas. Design, estética e comunicação orquestrados para transmitir autoridade silenciosa." />
+  
+  <!-- ==========================================
+       SEO & TAGS DO GOOGLE
+       ========================================== -->
+  <title>JAHUB | Estratégia Visual e Posicionamento Premium</title>
+  <meta name="description" content="Estratégia visual para marcas que desejam ser percebidas. A JAHUB orquestra design, estética e comunicação para transmitir autoridade silenciosa. Por Juliana de Almeida." />
+  <meta name="keywords" content="JAHUB, estratégia visual, posicionamento premium, identidade visual, Juliana de Almeida, design de marca, branding" />
+  
+  <!-- Open Graph (Partilha no WhatsApp / LinkedIn) -->
+  <meta property="og:title" content="JAHUB | Posicionamento Premium" />
+  <meta property="og:description" content="Design, estética e comunicação orquestrados para transmitir autoridade silenciosa." />
+  <meta property="og:type" content="website" />
 
   <!-- ==========================================
        FAVICON (Ícone da aba do navegador)
        ========================================== -->
-  <!-- O arquivo 'favicon.ico' deve estar na mesma pasta deste arquivo html -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <!-- Alternativa para PNG (recomendado se quiser transparência melhor) -->
-  <!-- <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" /> -->
 
-  <!-- Fonts -->
+  <!-- Fontes -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
@@ -55,6 +62,9 @@
     }
 
     body.menu-open { overflow: hidden; }
+    
+    /* Trava o scroll da página enquanto o Loader está a correr */
+    body.loading { overflow: hidden; height: 100vh; }
 
     .font-serif { font-family: 'Cormorant Garamond', serif; }
 
@@ -77,7 +87,7 @@
     .animate-pulse { animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite; }
   </style>
 </head>
-<body>
+<body class="loading">
   <div id="root"></div>
 
   <script type="text/babel">
@@ -239,23 +249,28 @@
       }, []);
 
       useEffect(() => {
-        document.body.classList.toggle("menu-open", mobileMenuOpen);
-        return () => document.body.classList.remove("menu-open");
+        // Bloqueia rolagem se o menu mobile estiver aberto
+        if (mobileMenuOpen && !document.body.classList.contains("loading")) {
+          document.body.classList.add("menu-open");
+        } else {
+          document.body.classList.remove("menu-open");
+        }
       }, [mobileMenuOpen]);
 
       return (
         <>
-          <header className={`fixed top-0 w-full z-50 transition-all duration-700 ease-in-out ${
+          <header className={`fixed top-0 w-full z-40 transition-all duration-700 ease-in-out ${
             isScrolled ? "bg-[#F7F5F1]/80 backdrop-blur-md py-4 shadow-sm" : "bg-transparent py-8"
           }`}>
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+              {/* JAHUB Logo com efeito Hover ultra suave, lento e sem escala brusca */}
               <motion.a
                 href="#"
-                initial={{ opacity: 0 }}
+                initial={{ opacity: 0, letterSpacing: "0.1em" }}
                 animate={{ opacity: 1 }}
-                whileHover={{ letterSpacing: "0.25em", color: "#D2AB7C", scale: 1.02 }}
-                transition={{ duration: 0.6, ease: "easeOut" }}
-                className="font-serif text-2xl tracking-[0.1em] text-[#324D3F] uppercase origin-left"
+                whileHover={{ letterSpacing: "0.14em", color: "#D2AB7C" }}
+                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                className="font-serif text-2xl text-[#324D3F] uppercase origin-left select-none"
               >
                 JAHUB
               </motion.a>
@@ -328,23 +343,23 @@
         <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10">
             <div className="max-w-4xl">
-              <FadeIn>
+              <FadeIn delay={0.5}>
                 <span className="block text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6">
                   Posicionamento Premium
                 </span>
               </FadeIn>
-              <FadeIn delay={0.2}>
+              <FadeIn delay={0.7}>
                 <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[1.1] text-[#324D3F] mb-8">
                   Estratégia visual para marcas que desejam ser percebidas.
                 </h1>
               </FadeIn>
-              <FadeIn delay={0.4} className="max-w-lg">
+              <FadeIn delay={0.9} className="max-w-lg">
                 <p className="text-gray-500 font-light leading-relaxed md:text-lg">
                   Design, estética e comunicação orquestrados para transmitir autoridade silenciosa.
                   Venda o seu valor sem precisar gritar.
                 </p>
               </FadeIn>
-              <FadeIn delay={0.6} className="mt-16">
+              <FadeIn delay={1.1} className="mt-16">
                 <a href="#manifesto" className="inline-flex flex-col items-center gap-2 group" aria-label="Ir para o manifesto">
                   <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-hover:text-[#D2AB7C] transition-colors duration-500">
                     Descubra
@@ -387,8 +402,6 @@
         <section id="sobre" className="py-24 md:py-32 bg-[#F7F5F1] relative">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-
-              {/* Foto com efeito 3D */}
               <div className="lg:col-span-5 relative" style={{ perspective: "1200px" }}>
                 <FadeIn direction="right">
                   <motion.div
@@ -418,7 +431,6 @@
                 </FadeIn>
               </div>
 
-              {/* Texto */}
               <div className="lg:col-span-7 flex flex-col justify-center">
                 <FadeIn>
                   <span className="text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6 block">
@@ -481,7 +493,7 @@
     }
 
     /* ─────────────────────────────────────────
-       NICHE CAROUSEL — com ResizeObserver
+       NICHE CAROUSEL
     ───────────────────────────────────────── */
     function NicheCarousel() {
       const containerRef = useRef(null);
@@ -598,7 +610,7 @@
     }
 
     /* ─────────────────────────────────────────
-       CONTACT FORM — com estado de sucesso
+       CONTACT FORM
     ───────────────────────────────────────── */
     function ContactForm() {
       const [status, setStatus] = useState("idle");
@@ -726,11 +738,67 @@
     }
 
     /* ─────────────────────────────────────────
-       APP ROOT
+       APP ROOT (COM TELA DE CARREGAMENTO)
     ───────────────────────────────────────── */
     function App() {
+      const [isLoading, setIsLoading] = useState(true);
+      const [imgError, setImgError] = useState(false);
+
+      useEffect(() => {
+        // Garante que o scroll fique travado durante o carregamento inicial
+        document.body.classList.add('loading');
+        
+        // Loader ativo por 2 segundos (2000 milissegundos) para uma experiência fluida e rápida
+        const timer = setTimeout(() => {
+          setIsLoading(false);
+          document.body.classList.remove('loading');
+        }, 2000);
+
+        return () => {
+          clearTimeout(timer);
+          document.body.classList.remove('loading');
+        };
+      }, []);
+
       return (
         <div className="min-h-screen relative w-full">
+          {/* LOADER ANIMADO PREMIUM */}
+          <AnimatePresence>
+            {isLoading && (
+              <motion.div
+                key="loader"
+                initial={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
+                className="fixed inset-0 z-[9999] bg-[#324D3F] flex items-center justify-center pointer-events-none"
+              >
+                {!imgError ? (
+                  <motion.img
+                    src="logo.png"
+                    alt="JAHUB Logo"
+                    onError={() => setImgError(true)}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    className="w-32 md:w-48 object-contain"
+                  />
+                ) : (
+                  // Plano B: Se o logo.png não estiver na pasta do ambiente do Canvas, mostra o texto em ouro
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    className="font-serif text-5xl md:text-6xl text-[#D2AB7C] tracking-[0.2em]"
+                  >
+                    JAHUB
+                  </motion.div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <Header />
           <main>
             <Hero />
