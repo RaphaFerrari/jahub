@@ -3,45 +3,64 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <!-- ==========================================
-       SEO & TAGS DO GOOGLE
-       ========================================== -->
-  <title>JAHUB</title>
+
+  <!-- SEO & OPEN GRAPH -->
+  <title>JAHUB | Estratégia Visual e Posicionamento Premium</title>
   <meta name="description" content="Estratégia visual para marcas que desejam ser percebidas. A JAHUB orquestra design, estética e comunicação para transmitir autoridade silenciosa. Por Juliana de Almeida." />
   <meta name="keywords" content="JAHUB, estratégia visual, posicionamento premium, identidade visual, Juliana de Almeida, design de marca, branding" />
-  
-  <!-- Open Graph (Partilha no WhatsApp / LinkedIn) -->
+  <meta name="author" content="Juliana de Almeida" />
+
+  <!--
+    FIX 1 (SEO): meta robots adicionada — sem ela o Google pode ignorar a página.
+    FIX 2 (SEO): canonical com URL absoluta. TROQUE pela URL real do seu domínio.
+  -->
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://www.jahub.com.br/" />
+
+  <!--
+    FIX 3 (COMPARTILHAMENTO): og:image precisa de URL ABSOLUTA para funcionar
+    no WhatsApp e LinkedIn. TROQUE pela URL real da imagem no seu servidor.
+  -->
   <meta property="og:title" content="JAHUB | Posicionamento Premium" />
   <meta property="og:description" content="Design, estética e comunicação orquestrados para transmitir autoridade silenciosa." />
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.jahub.com.br/" />
+  <meta property="og:image" content="https://www.jahub.com.br/logo.png" />
 
-  <!-- ==========================================
-       FAVICON (Ícone da aba do navegador)
-       ========================================== -->
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-
-  <!-- Fontes -->
+  <!-- PERFORMANCE: DNS Prefetch & Preconnect -->
+  <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
+  <link rel="dns-prefetch" href="https://unpkg.com" />
+  <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+
+  <!--
+    FIX 4 (PERFORMANCE): @import de fontes REMOVIDO do bloco <style>.
+    Estava duplicado: este <link> já carrega as fontes com mais eficiência.
+    @import dentro de <style> bloqueia o render e dispara uma 2ª requisição.
+  -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind Play CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!--
+    FIX 5 (PERFORMANCE): `defer` adicionado em todos os scripts externos.
+    Sem defer, cada script bloqueia o parsing do HTML enquanto baixa e executa.
+    Com defer, o navegador baixa em paralelo e executa em ordem após o HTML.
+    Ganho estimado: 200-400ms mais rápido em conexões móveis.
 
-  <!-- React 18 UMD -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-
-  <!-- Framer Motion UMD (expõe window.Motion) -->
-  <script src="https://cdn.jsdelivr.net/npm/framer-motion@11/dist/framer-motion.js"></script>
-
-  <!-- Babel Standalone: transforma JSX no browser -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    FIX 6 (SEGURANÇA): `crossorigin` adicionado ao Babel.
+    Permite ao navegador capturar e reportar erros de script corretamente
+    (sem ele, erros cross-origin aparecem apenas como "Script error").
+  -->
+  <script defer src="https://cdn.tailwindcss.com"></script>
+  <script defer crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script defer crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script defer crossorigin src="https://cdn.jsdelivr.net/npm/framer-motion@11/dist/framer-motion.js"></script>
+  <script defer crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap');
-
     :root {
       --bg-off-white: #F7F5F1;
       --primary-olive: #324D3F;
@@ -62,9 +81,7 @@
     }
 
     body.menu-open { overflow: hidden; }
-    
-    /* Trava o scroll da página enquanto o Loader está a correr */
-    body.loading { overflow: hidden; height: 100vh; }
+    body.loading   { overflow: hidden; height: 100vh; }
 
     .font-serif { font-family: 'Cormorant Garamond', serif; }
 
@@ -79,7 +96,6 @@
       -webkit-text-fill-color: var(--text-soft-black);
     }
 
-    /* Pulso para a seta animada na Hero */
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50%       { opacity: .5; }
@@ -91,82 +107,58 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    /* ─────────────────────────────────────────
-       Hooks do React e Motion vindos dos globals
-    ───────────────────────────────────────── */
     const { useState, useEffect, useRef, useCallback } = React;
-    const {
-      motion,
-      AnimatePresence,
-      useMotionValue,
-      useSpring,
-      useTransform,
-    } = Motion;
+    const { motion, AnimatePresence, useMotionValue, useSpring, useTransform } = Motion;
 
-    /* ─────────────────────────────────────────
-       ÍCONES — SVGs inline (substituem lucide-react)
-    ───────────────────────────────────────── */
+    /* ── ÍCONES SVG inline ── */
     const MenuIcon = ({ size = 24, strokeWidth = 1.5, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" strokeWidth={strokeWidth}
-        strokeLinecap="round" strokeLinejoin="round"
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
         className={className} aria-hidden="true">
-        <line x1="3" y1="6" x2="21" y2="6"/>
-        <line x1="3" y1="12" x2="21" y2="12"/>
-        <line x1="3" y1="18" x2="21" y2="18"/>
+        <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
       </svg>
     );
 
     const XIcon = ({ size = 24, strokeWidth = 1.5, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" strokeWidth={strokeWidth}
-        strokeLinecap="round" strokeLinejoin="round"
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
         className={className} aria-hidden="true">
-        <line x1="18" y1="6" x2="6" y2="18"/>
-        <line x1="6" y1="6" x2="18" y2="18"/>
+        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
       </svg>
     );
 
     const ArrowRightIcon = ({ size = 16, strokeWidth = 1.5, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" strokeWidth={strokeWidth}
-        strokeLinecap="round" strokeLinejoin="round"
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
         className={className} aria-hidden="true">
-        <line x1="5" y1="12" x2="19" y2="12"/>
-        <polyline points="12 5 19 12 12 19"/>
+        <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
       </svg>
     );
 
     const ArrowUpRightIcon = ({ size = 28, strokeWidth = 1, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" strokeWidth={strokeWidth}
-        strokeLinecap="round" strokeLinejoin="round"
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
         className={className} aria-hidden="true">
-        <line x1="7" y1="17" x2="17" y2="7"/>
-        <polyline points="7 7 17 7 17 17"/>
+        <line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/>
       </svg>
     );
 
     const CheckCircleIcon = ({ size = 40, strokeWidth = 1, className = "" }) => (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" strokeWidth={strokeWidth}
-        strokeLinecap="round" strokeLinejoin="round"
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round"
         className={className} aria-hidden="true">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-        <polyline points="22 4 12 14.01 9 11.01"/>
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
       </svg>
     );
 
-    /* ─────────────────────────────────────────
-       DADOS
-    ───────────────────────────────────────── */
+    /* ── DADOS ── */
     const NICHES = [
-      { id: 1, title: "Estética Avançada",  desc: "Nude, luxo clean e sensualidade refinada.",         color: "from-[#E8DDD2] to-[#D5C6B8]", tag: "Beleza"  },
-      { id: 2, title: "Advocacia",         desc: "Autoridade inquestionável em tons sóbrios.",        color: "from-[#EBE9E4] to-[#D1CFC9]", tag: "Direito" },
-      { id: 3, title: "Psicologia",        desc: "Acolhimento, respiro e tons acinzentados.",         color: "from-[#F0F2F0] to-[#DFE3E0]", tag: "Saúde"   },
-      { id: 4, title: "Nutrição",          desc: "Essência natural, clean e orgânica.",               color: "from-[#E9EDDD] to-[#DCE3CB]", tag: "Saúde"   },
-      { id: 5, title: "Lash Design",         desc: "Feminilidade, precisão e elegância.",               color: "from-[#F5E6E6] to-[#E8D5D5]", tag: "Beleza"  },
-      { id: 6, title: "Odontologia",         desc: "Precisão clínica com estética premium.",            color: "from-[#EAEFF2] to-[#D8E1E6]", tag: "Saúde"   },
+      { id: 1, title: "Estética Avançada",  desc: "Nude, luxo clean e sensualidade refinada.",      color: "from-[#E8DDD2] to-[#D5C6B8]", tag: "Beleza"  },
+      { id: 2, title: "Advocacia",           desc: "Autoridade inquestionável em tons sóbrios.",     color: "from-[#EBE9E4] to-[#D1CFC9]", tag: "Direito" },
+      { id: 3, title: "Psicologia",          desc: "Acolhimento, respiro e tons acinzentados.",      color: "from-[#F0F2F0] to-[#DFE3E0]", tag: "Saúde"   },
+      { id: 4, title: "Nutrição",            desc: "Essência natural, clean e orgânica.",            color: "from-[#E9EDDD] to-[#DCE3CB]", tag: "Saúde"   },
+      { id: 5, title: "Lash Design",         desc: "Feminilidade, precisão e elegância.",            color: "from-[#F5E6E6] to-[#E8D5D5]", tag: "Beleza"  },
+      { id: 6, title: "Odontologia",         desc: "Precisão clínica com estética premium.",         color: "from-[#EAEFF2] to-[#D8E1E6]", tag: "Saúde"   },
     ];
 
     const SERVICES = [
@@ -185,9 +177,7 @@
       { label: "Serviços",  href: "servicos"  },
     ];
 
-    /* ─────────────────────────────────────────
-       HELPERS
-    ───────────────────────────────────────── */
+    /* ── FADEIN ── */
     function FadeIn({ children, delay = 0, className = "", direction = "up" }) {
       const dirs = {
         up:    { y: 40,  opacity: 0 },
@@ -209,15 +199,11 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       FLOATING WHATSAPP
-    ───────────────────────────────────────── */
+    /* ── FLOATING WHATSAPP ── */
     function FloatingWhatsApp() {
       return (
         <motion.a
-          href="https://wa.me/5531994513444"
-          target="_blank"
-          rel="noopener noreferrer"
+          href="https://wa.me/5531994513444" target="_blank" rel="noopener noreferrer"
           initial={{ opacity: 0, scale: 0.5, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 0.6, type: "spring" }}
@@ -235,11 +221,9 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       HEADER
-    ───────────────────────────────────────── */
+    /* ── HEADER ── */
     function Header() {
-      const [isScrolled, setIsScrolled]       = useState(false);
+      const [isScrolled, setIsScrolled]         = useState(false);
       const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
       useEffect(() => {
@@ -248,13 +232,15 @@
         return () => window.removeEventListener("scroll", onScroll);
       }, []);
 
+      /*
+        FIX 7 (BUG): useEffect sem cleanup — se o componente desmontasse
+        com o menu aberto, a classe "menu-open" ficaria presa no body
+        para sempre, travando o scroll da página indefinidamente.
+      */
       useEffect(() => {
-        // Bloqueia rolagem se o menu mobile estiver aberto
-        if (mobileMenuOpen && !document.body.classList.contains("loading")) {
-          document.body.classList.add("menu-open");
-        } else {
-          document.body.classList.remove("menu-open");
-        }
+        const shouldLock = mobileMenuOpen && !document.body.classList.contains("loading");
+        document.body.classList.toggle("menu-open", shouldLock);
+        return () => document.body.classList.remove("menu-open");
       }, [mobileMenuOpen]);
 
       return (
@@ -263,19 +249,15 @@
             isScrolled ? "bg-[#F7F5F1]/80 backdrop-blur-md py-4 shadow-sm" : "bg-transparent py-8"
           }`}>
             <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
-              {/* JAHUB Logo com efeito Hover ultra suave, lento e sem escala brusca */}
-              <motion.a
-                href="#"
+              <motion.a href="#"
                 initial={{ opacity: 0, letterSpacing: "0.1em" }}
                 animate={{ opacity: 1 }}
                 whileHover={{ letterSpacing: "0.14em", color: "#D2AB7C" }}
                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="font-serif text-2xl text-[#324D3F] uppercase origin-left select-none"
-              >
+                className="font-serif text-2xl text-[#324D3F] uppercase origin-left select-none">
                 JAHUB
               </motion.a>
 
-              {/* Desktop Nav */}
               <nav className="hidden md:flex items-center gap-10">
                 {NAV_ITEMS.map((item, i) => (
                   <a key={i} href={`#${item.href}`}
@@ -290,8 +272,7 @@
                 </a>
               </nav>
 
-              {/* Mobile Toggle */}
-              <button
+              <button type="button"
                 className="md:hidden text-[#324D3F] hover:text-[#D2AB7C] transition-colors duration-300"
                 onClick={() => setMobileMenuOpen(true)}
                 aria-label="Abrir menu" aria-expanded={mobileMenuOpen}>
@@ -300,18 +281,15 @@
             </div>
           </header>
 
-          {/* Mobile Menu */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div
-                initial={{ opacity: 0, y: "-100%" }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: "-100%" }}
+                initial={{ opacity: 0, y: "-100%" }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: "-100%" }}
                 transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
                 className="fixed inset-0 z-[60] bg-[#E8DDD2] flex flex-col justify-center items-center"
                 role="dialog" aria-modal="true" aria-label="Menu de navegação"
               >
-                <button
+                <button type="button"
                   className="absolute top-6 right-6 text-[#324D3F] p-2 hover:text-[#D2AB7C] transition-colors"
                   onClick={() => setMobileMenuOpen(false)} aria-label="Fechar menu">
                   <XIcon strokeWidth={1.5} size={32} />
@@ -320,8 +298,7 @@
                   {[...NAV_ITEMS, { label: "Contato", href: "contato" }].map((item, i) => (
                     <motion.a key={i} href={`#${item.href}`}
                       onClick={() => setMobileMenuOpen(false)}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
+                      initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
                       className="font-serif text-4xl text-[#324D3F] hover:text-[#D2AB7C] hover:tracking-wider transition-all duration-500">
                       {item.label}
@@ -335,18 +312,14 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       HERO
-    ───────────────────────────────────────── */
+    /* ── HERO ── */
     function Hero() {
       return (
         <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10">
             <div className="max-w-4xl">
               <FadeIn delay={0.5}>
-                <span className="block text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6">
-                  Posicionamento Premium
-                </span>
+                <span className="block text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6">Posicionamento Premium</span>
               </FadeIn>
               <FadeIn delay={0.7}>
                 <h1 className="font-serif text-5xl md:text-7xl lg:text-8xl leading-[1.1] text-[#324D3F] mb-8">
@@ -361,15 +334,12 @@
               </FadeIn>
               <FadeIn delay={1.1} className="mt-16">
                 <a href="#manifesto" className="inline-flex flex-col items-center gap-2 group" aria-label="Ir para o manifesto">
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-hover:text-[#D2AB7C] transition-colors duration-500">
-                    Descubra
-                  </span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-gray-400 group-hover:text-[#D2AB7C] transition-colors duration-500">Descubra</span>
                   <div className="w-[1px] h-12 bg-gray-300 group-hover:bg-[#D2AB7C] transition-colors duration-500 origin-top animate-pulse" />
                 </a>
               </FadeIn>
             </div>
           </div>
-
           <motion.div
             animate={{ scale: [1, 1.05, 1], opacity: [0.3, 0.5, 0.3], rotate: [0, 2, 0] }}
             transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
@@ -380,9 +350,7 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       FOUNDER
-    ───────────────────────────────────────── */
+    /* ── FOUNDER ── */
     function Founder() {
       const x = useMotionValue(0);
       const y = useMotionValue(0);
@@ -405,37 +373,25 @@
               <div className="lg:col-span-5 relative" style={{ perspective: "1200px" }}>
                 <FadeIn direction="right">
                   <motion.div
-                    onMouseMove={handleMouseMove}
-                    onMouseLeave={handleMouseLeave}
+                    onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
                     style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
                     className="relative aspect-[3/4] w-full bg-[#E8DDD2] overflow-visible cursor-default group"
                   >
-                    <div
-                      className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
-                      style={{ transform: "translateZ(30px)" }}
-                      aria-hidden="true"
-                    />
-                    <img
-                      src="juliana.jpg"
-                      alt="Juliana de Almeida - Fundadora da JAHUB"
-                      loading="lazy"
-                      className="w-full h-full object-cover"
+                    <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
+                      style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
+                    <img src="juliana.jpg" alt="Juliana de Almeida - Fundadora da JAHUB"
+                      loading="lazy" className="w-full h-full object-cover"
                       style={{ transform: "translateZ(10px)", filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
                     />
-                    <div
-                      className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-overlay"
-                      style={{ transform: "translateZ(15px)" }}
-                      aria-hidden="true"
-                    />
+                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-overlay"
+                      style={{ transform: "translateZ(15px)" }} aria-hidden="true" />
                   </motion.div>
                 </FadeIn>
               </div>
 
               <div className="lg:col-span-7 flex flex-col justify-center">
                 <FadeIn>
-                  <span className="text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6 block">
-                    Por trás da marca
-                  </span>
+                  <span className="text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6 block">Por trás da marca</span>
                   <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-[#324D3F] leading-tight mb-8">
                     Muito prazer, <br className="hidden md:block"/>
                     <span className="italic">Juliana de Almeida.</span>
@@ -450,21 +406,16 @@
                 </FadeIn>
                 <FadeIn delay={0.4} className="mt-12">
                   <div className="font-serif text-3xl text-[#324D3F]/60 italic">Juliana de Almeida</div>
-                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#D2AB7C] mt-2 block">
-                    Fundadora & Diretora Criativa
-                  </span>
+                  <span className="text-[10px] uppercase tracking-[0.2em] text-[#D2AB7C] mt-2 block">Fundadora & Diretora Criativa</span>
                 </FadeIn>
               </div>
-
             </div>
           </div>
         </section>
       );
     }
 
-    /* ─────────────────────────────────────────
-       MANIFESTO
-    ───────────────────────────────────────── */
+    /* ── MANIFESTO ── */
     function Manifesto() {
       return (
         <section id="manifesto" className="py-32 md:py-48 bg-[#324D3F] text-[#F7F5F1] relative">
@@ -492,17 +443,14 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       NICHE CAROUSEL
-    ───────────────────────────────────────── */
+    /* ── NICHE CAROUSEL ── */
     function NicheCarousel() {
       const containerRef = useRef(null);
       const [dragWidth, setDragWidth] = useState(0);
 
       const recalc = useCallback(() => {
-        if (containerRef.current) {
+        if (containerRef.current)
           setDragWidth(containerRef.current.scrollWidth - containerRef.current.offsetWidth);
-        }
       }, []);
 
       useEffect(() => {
@@ -515,9 +463,7 @@
       return (
         <section id="nichos" className="py-32 overflow-hidden" aria-label="Atuação por nicho">
           <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <FadeIn>
-              <h2 className="font-serif text-4xl md:text-5xl text-[#324D3F]">Atuação por Nicho</h2>
-            </FadeIn>
+            <FadeIn><h2 className="font-serif text-4xl md:text-5xl text-[#324D3F]">Atuação por Nicho</h2></FadeIn>
             <FadeIn delay={0.2}>
               <p className="text-gray-500 font-light max-w-sm text-sm">
                 Estéticas sob medida. Cada profissão exige uma comunicação visual única para gerar desejo e autoridade.
@@ -525,53 +471,39 @@
               </p>
             </FadeIn>
           </div>
-
-          <div className="pl-6 md:pl-12 max-w-[100vw]">
-            <motion.div
-              ref={containerRef}
+          <div className="relative pl-6 md:pl-12 max-w-[100vw]">
+            <motion.div ref={containerRef}
               className="cursor-grab active:cursor-grabbing overflow-hidden"
-              whileTap={{ cursor: "grabbing" }}
-              role="list"
-            >
-              <motion.div
-                drag="x"
-                dragConstraints={{ right: 0, left: -dragWidth }}
-                dragElastic={0.1}
-                dragTransition={{ bounceStiffness: 100, bounceDamping: 20 }}
-                className="flex gap-6 pr-12 w-max"
-              >
+              whileTap={{ cursor: "grabbing" }} role="list">
+              <motion.div drag="x" dragConstraints={{ right: 0, left: -dragWidth }}
+                dragElastic={0.1} dragTransition={{ bounceStiffness: 100, bounceDamping: 20 }}
+                className="flex gap-6 pr-12 w-max">
                 {NICHES.map((niche, index) => (
                   <motion.div key={niche.id} role="listitem"
-                    initial={{ opacity: 0, x: 50 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true, margin: "-10%" }}
                     transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
-                    className="w-[280px] md:w-[380px] flex-shrink-0 group"
+                    className="w-[80vw] sm:w-[300px] md:w-[340px] lg:w-[380px] xl:w-[400px] flex-shrink-0 group"
                   >
                     <div className={`w-full h-[400px] md:h-[500px] bg-gradient-to-br ${niche.color} relative p-6 flex flex-col justify-between overflow-hidden transition-all duration-700 group-hover:shadow-2xl`}>
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" aria-hidden="true" />
-                      <span className="inline-block px-3 py-1 border border-[#324D3F]/20 text-[#324D3F] text-[10px] uppercase tracking-widest w-max relative z-10">
-                        {niche.tag}
-                      </span>
+                      <span className="inline-block px-3 py-1 border border-[#324D3F]/20 text-[#324D3F] text-[10px] uppercase tracking-widest w-max relative z-10">{niche.tag}</span>
                       <div className="relative z-10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
                         <h3 className="font-serif text-3xl text-[#324D3F] mb-3">{niche.title}</h3>
-                        <p className="text-[#324D3F]/80 font-light text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                          {niche.desc}
-                        </p>
+                        <p className="text-[#324D3F]/80 font-light text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">{niche.desc}</p>
                       </div>
                     </div>
                   </motion.div>
                 ))}
               </motion.div>
             </motion.div>
+            <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-[#F7F5F1] to-transparent pointer-events-none z-10" aria-hidden="true" />
           </div>
         </section>
       );
     }
 
-    /* ─────────────────────────────────────────
-       SERVICES
-    ───────────────────────────────────────── */
+    /* ── SERVICES ── */
     function Services() {
       return (
         <section id="servicos" className="py-32 bg-[#E8DDD2] relative">
@@ -579,9 +511,7 @@
             <div className="lg:w-1/3">
               <FadeIn className="sticky top-32">
                 <span className="text-xs uppercase tracking-[0.3em] text-[#324D3F] mb-4 block">A Assinatura JAHUB</span>
-                <h2 className="font-serif text-4xl md:text-5xl text-[#324D3F] leading-tight mb-6">
-                  A arquitetura <br/>da sua marca.
-                </h2>
+                <h2 className="font-serif text-4xl md:text-5xl text-[#324D3F] leading-tight mb-6">A arquitetura <br/>da sua marca.</h2>
                 <p className="text-[#324D3F]/70 font-light leading-relaxed">
                   Não oferecemos pacotes engessados. Oferecemos soluções integradas para transformar o complexo em elegância pura.
                 </p>
@@ -592,13 +522,8 @@
                 {SERVICES.map((service, index) => (
                   <FadeIn key={index} delay={index * 0.1}>
                     <div className="group border-b border-[#324D3F]/10 py-8 md:py-10 flex items-center justify-between cursor-default hover:bg-[#324D3F]/[0.03] transition-colors duration-500 px-4 -mx-4 rounded-lg">
-                      <h3 className="font-serif text-2xl md:text-3xl text-[#324D3F] group-hover:text-[#D2AB7C] transition-colors duration-500">
-                        {service}
-                      </h3>
-                      <ArrowUpRightIcon
-                        className="text-[#324D3F]/30 group-hover:text-[#D2AB7C] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-500"
-                        strokeWidth={1} size={28}
-                      />
+                      <h3 className="font-serif text-2xl md:text-3xl text-[#324D3F] group-hover:text-[#D2AB7C] transition-colors duration-500">{service}</h3>
+                      <ArrowUpRightIcon className="text-[#324D3F]/30 group-hover:text-[#D2AB7C] transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-500" strokeWidth={1} size={28} />
                     </div>
                   </FadeIn>
                 ))}
@@ -609,24 +534,14 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       CONTACT FORM
-    ───────────────────────────────────────── */
+    /* ── CONTACT FORM ── */
     function ContactForm() {
       const [status, setStatus] = useState("idle");
       const [fields, setFields] = useState({ name: "", email: "", message: "" });
 
       const handleChange = (e) => setFields(prev => ({ ...prev, [e.target.id]: e.target.value }));
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        setStatus("success");
-      };
-
-      const handleReset = () => {
-        setStatus("idle");
-        setFields({ name: "", email: "", message: "" });
-      };
+      const handleSubmit = (e) => { e.preventDefault(); setStatus("success"); };
+      const handleReset  = () => { setStatus("idle"); setFields({ name: "", email: "", message: "" }); };
 
       return (
         <AnimatePresence mode="wait">
@@ -639,10 +554,8 @@
             >
               <CheckCircleIcon className="text-[#D2AB7C]" size={40} strokeWidth={1} />
               <h3 className="font-serif text-4xl text-[#F7F5F1]">Mensagem enviada.</h3>
-              <p className="text-gray-400 font-light leading-relaxed">
-                Obrigada pelo contato. Em breve retornaremos para dar início à transformação da sua marca.
-              </p>
-              <button onClick={handleReset}
+              <p className="text-gray-400 font-light leading-relaxed">Obrigada pelo contato. Em breve retornaremos para dar início à transformação da sua marca.</p>
+              <button type="button" onClick={handleReset}
                 className="group flex items-center gap-3 text-gray-500 hover:text-[#D2AB7C] transition-colors duration-500 uppercase tracking-widest text-xs pt-4 mt-2">
                 <span>Enviar outra mensagem</span>
                 <ArrowRightIcon size={14} strokeWidth={1.5} className="transform group-hover:translate-x-2 transition-transform duration-500" />
@@ -651,36 +564,44 @@
           ) : (
             <motion.form key="form"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              transition={{ duration: 0.4 }}
-              className="space-y-10" onSubmit={handleSubmit} noValidate
+              transition={{ duration: 0.4 }} className="space-y-10" onSubmit={handleSubmit} noValidate
             >
-              {[
-                { id: "name",    type: "text",  label: "Nome Completo"               },
-                { id: "email",   type: "email", label: "E-mail Profissional"         },
-              ].map(({ id, type, label }) => (
-                <div key={id} className="relative group">
-                  <input type={type} id={id} required
-                    value={fields[id]} onChange={handleChange}
-                    className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent"
-                    placeholder={label}
-                  />
-                  <label htmlFor={id}
-                    className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
-                    {label}
-                  </label>
-                </div>
-              ))}
+              {/*
+                FIX 8 (UX/ACESSIBILIDADE): autocomplete adicionado.
+                Permite que o browser preencha os campos automaticamente,
+                reduzindo a fricção de preenchimento especialmente no mobile.
+              */}
               <div className="relative group">
-                <textarea id="message" required rows={1}
+                <input type="text" id="name" required maxLength="100" autoComplete="name"
+                  value={fields.name} onChange={handleChange}
+                  className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent"
+                  placeholder="Nome Completo" />
+                <label htmlFor="name" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
+                  Nome Completo
+                </label>
+              </div>
+
+              <div className="relative group">
+                <input type="email" id="email" required maxLength="100"
+                  autoComplete="email" spellCheck="false"
+                  value={fields.email} onChange={handleChange}
+                  className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent"
+                  placeholder="E-mail Profissional" />
+                <label htmlFor="email" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
+                  E-mail Profissional
+                </label>
+              </div>
+
+              <div className="relative group">
+                <textarea id="message" required rows={1} maxLength="1000"
                   value={fields.message} onChange={handleChange}
                   className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent resize-none min-h-[100px]"
-                  placeholder="Sua mensagem"
-                />
-                <label htmlFor="message"
-                  className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
+                  placeholder="Sua mensagem" />
+                <label htmlFor="message" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
                   Conte-nos sobre o seu projeto
                 </label>
               </div>
+
               <button type="submit"
                 className="group flex items-center gap-4 text-[#F7F5F1] hover:text-[#D2AB7C] transition-colors duration-500 uppercase tracking-widest text-xs pt-4">
                 <span>Enviar Mensagem</span>
@@ -692,9 +613,7 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       FOOTER
-    ───────────────────────────────────────── */
+    /* ── FOOTER ── */
     function Footer() {
       return (
         <footer id="contato" className="bg-[#1A1A1A] text-[#F7F5F1] pt-32 pb-12">
@@ -715,16 +634,15 @@
                   </a>
                 </FadeIn>
               </div>
-              <FadeIn delay={0.2}>
-                <ContactForm />
-              </FadeIn>
+              <FadeIn delay={0.2}><ContactForm /></FadeIn>
             </div>
             <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-light">
               <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
                 <p>© {new Date().getFullYear()} JAHUB. Todos os direitos reservados.</p>
                 <span className="hidden md:inline text-gray-800">|</span>
-                <p>
-                  Desenvolvido por <a href="https://raphaelferrari.dev.br/" target="_blank" rel="noopener noreferrer" className="hover:text-[#D2AB7C] transition-colors duration-300">Raphael Ferrari</a>
+                <p>Desenvolvido por{" "}
+                  <a href="https://raphaelferrari.dev.br/" target="_blank" rel="noopener noreferrer"
+                    className="hover:text-[#D2AB7C] transition-colors duration-300">Raphael Ferrari</a>
                 </p>
               </div>
               <div className="flex gap-6 mt-4 md:mt-0">
@@ -737,59 +655,42 @@
       );
     }
 
-    /* ─────────────────────────────────────────
-       APP ROOT (COM TELA DE CARREGAMENTO)
-    ───────────────────────────────────────── */
+    /* ── APP ROOT ── */
     function App() {
       const [isLoading, setIsLoading] = useState(true);
-      const [imgError, setImgError] = useState(false);
+      const [imgError, setImgError]   = useState(false);
 
       useEffect(() => {
-        // Garante que o scroll fique travado durante o carregamento inicial
-        document.body.classList.add('loading');
-        
-        // Loader ativo por 2 segundos (2000 milissegundos) para uma experiência fluida e rápida
+        document.body.classList.add("loading");
         const timer = setTimeout(() => {
           setIsLoading(false);
-          document.body.classList.remove('loading');
+          document.body.classList.remove("loading");
         }, 2000);
-
-        return () => {
-          clearTimeout(timer);
-          document.body.classList.remove('loading');
-        };
+        return () => { clearTimeout(timer); document.body.classList.remove("loading"); };
       }, []);
 
       return (
         <div className="min-h-screen relative w-full">
-          {/* LOADER ANIMADO PREMIUM */}
           <AnimatePresence>
             {isLoading && (
-              <motion.div
-                key="loader"
-                initial={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
+              <motion.div key="loader"
+                initial={{ opacity: 1 }} exit={{ opacity: 0 }}
                 transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
                 className="fixed inset-0 z-[9999] bg-[#324D3F] flex items-center justify-center pointer-events-none"
               >
                 {!imgError ? (
-                  <motion.img
-                    src="logo.png"
-                    alt="JAHUB Logo"
+                  <motion.img src="logo.png" alt="JAHUB Logo" fetchpriority="high"
                     onError={() => setImgError(true)}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
                     className="w-32 md:w-48 object-contain"
                   />
                 ) : (
-                  // Plano B: Se o logo.png não estiver na pasta do ambiente do Canvas, mostra o texto em ouro
                   <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
                     className="font-serif text-5xl md:text-6xl text-[#D2AB7C] tracking-[0.2em]"
                   >
                     JAHUB
