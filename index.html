@@ -404,7 +404,7 @@
                     />
                     <img
                       src="juliana.jpg"
-                      alt="Juliana de Almeida - Fundadora da JAHUB"
+                      alt="Juliana Almeida - Fundadora da JAHUB"
                       loading="lazy"
                       className="w-full h-full object-cover"
                       style={{ transform: "translateZ(10px)", filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
@@ -437,7 +437,7 @@
                   </div>
                 </FadeIn>
                 <FadeIn delay={0.4} className="mt-12">
-                  <div className="font-serif text-3xl text-[#324D3F]/60 italic">Juliana de Almeida</div>
+                  <div className="font-serif text-3xl text-[#324D3F]/60 italic">Juliana Almeida</div>
                   <span className="text-[10px] uppercase tracking-[0.2em] text-[#D2AB7C] mt-2 block">
                     Fundadora & Diretora Criativa
                   </span>
@@ -708,8 +708,14 @@
               </FadeIn>
             </div>
             <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-light">
-              <p>© {new Date().getFullYear()} JAHUB. Todos os direitos reservados.</p>
-              <div className="flex gap-6">
+              <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 text-center md:text-left">
+                <p>© {new Date().getFullYear()} JAHUB. Todos os direitos reservados.</p>
+                <span className="hidden md:inline text-gray-800">|</span>
+                <p>
+                  Desenvolvido por <a href="https://raphaelferrari.dev.br/" target="_blank" rel="noopener noreferrer" className="hover:text-[#D2AB7C] transition-colors duration-300">Raphael Ferrari</a>
+                </p>
+              </div>
+              <div className="flex gap-6 mt-4 md:mt-0">
                 <a href="#" className="hover:text-[#F7F5F1] transition-colors">Política de Privacidade</a>
                 <a href="#" className="hover:text-[#F7F5F1] transition-colors">Termos de Uso</a>
               </div>
