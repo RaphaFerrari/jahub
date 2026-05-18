@@ -10,22 +10,14 @@
   <meta name="keywords" content="JAHUB, estratégia visual, posicionamento premium, identidade visual, Juliana de Almeida, design de marca, branding" />
   <meta name="author" content="Juliana de Almeida" />
 
-  <!--
-    FIX 1 (SEO): meta robots adicionada — sem ela o Google pode ignorar a página.
-    FIX 2 (SEO): canonical com URL absoluta. TROQUE pela URL real do seu domínio.
-  -->
   <meta name="robots" content="index, follow" />
-  <link rel="canonical" href="https://www.jahub.com.br/" />
+  <link rel="canonical" href="https://jahub.vlog.br/" />
 
-  <!--
-    FIX 3 (COMPARTILHAMENTO): og:image precisa de URL ABSOLUTA para funcionar
-    no WhatsApp e LinkedIn. TROQUE pela URL real da imagem no seu servidor.
-  -->
-  <meta property="og:title" content="JAHUB | Posicionamento Premium" />
+  <meta property="og:title" content="JAHUB" />
   <meta property="og:description" content="Design, estética e comunicação orquestrados para transmitir autoridade silenciosa." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://www.jahub.com.br/" />
-  <meta property="og:image" content="https://www.jahub.com.br/logo.png" />
+  <meta property="og:url" content="https://jahub.vlog.br/" />
+  <meta property="og:image" content="https://jahub.vlog.br/logo.png" />
 
   <!-- PERFORMANCE: DNS Prefetch & Preconnect -->
   <link rel="dns-prefetch" href="https://cdn.tailwindcss.com" />
@@ -34,26 +26,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Favicon -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
-
-  <!--
-    FIX 4 (PERFORMANCE): @import de fontes REMOVIDO do bloco <style>.
-    Estava duplicado: este <link> já carrega as fontes com mais eficiência.
-    @import dentro de <style> bloqueia o render e dispara uma 2ª requisição.
-  -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
-  <!--
-    FIX 5 (PERFORMANCE): `defer` adicionado em todos os scripts externos.
-    Sem defer, cada script bloqueia o parsing do HTML enquanto baixa e executa.
-    Com defer, o navegador baixa em paralelo e executa em ordem após o HTML.
-    Ganho estimado: 200-400ms mais rápido em conexões móveis.
-
-    FIX 6 (SEGURANÇA): `crossorigin` adicionado ao Babel.
-    Permite ao navegador capturar e reportar erros de script corretamente
-    (sem ele, erros cross-origin aparecem apenas como "Script error").
-  -->
   <script defer src="https://cdn.tailwindcss.com"></script>
   <script defer crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script defer crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
@@ -232,11 +207,6 @@
         return () => window.removeEventListener("scroll", onScroll);
       }, []);
 
-      /*
-        FIX 7 (BUG): useEffect sem cleanup — se o componente desmontasse
-        com o menu aberto, a classe "menu-open" ficaria presa no body
-        para sempre, travando o scroll da página indefinidamente.
-      */
       useEffect(() => {
         const shouldLock = mobileMenuOpen && !document.body.classList.contains("loading");
         document.body.classList.toggle("menu-open", shouldLock);
@@ -443,61 +413,156 @@
       );
     }
 
-    /* ── NICHE CAROUSEL ── */
+    /* ── NICHE CAROUSEL — Autoplay Slideshow ── */
     function NicheCarousel() {
-      const containerRef = useRef(null);
-      const [dragWidth, setDragWidth] = useState(0);
+      const [current,   setCurrent]   = useState(0);
+      const [direction, setDirection] = useState(1); // 1 = avança, -1 = volta
+      const [paused,    setPaused]    = useState(false);
+      const total = NICHES.length;
 
-      const recalc = useCallback(() => {
-        if (containerRef.current)
-          setDragWidth(containerRef.current.scrollWidth - containerRef.current.offsetWidth);
-      }, []);
+      const goNext = () => {
+        setDirection(1);
+        setCurrent(c => (c + 1) % total);
+        setPaused(true);
+      };
 
+      const goPrev = () => {
+        setDirection(-1);
+        setCurrent(c => (c - 1 + total) % total);
+        setPaused(true);
+      };
+
+      const goTo = (i) => {
+        setDirection(i > current ? 1 : -1);
+        setCurrent(i);
+        setPaused(true);
+      };
+
+      // Retoma autoplay 6s após última interação do usuário
       useEffect(() => {
-        recalc();
-        const obs = new ResizeObserver(recalc);
-        if (containerRef.current) obs.observe(containerRef.current);
-        return () => obs.disconnect();
-      }, [recalc]);
+        if (!paused) return;
+        const t = setTimeout(() => setPaused(false), 6000);
+        return () => clearTimeout(t);
+      }, [paused, current]);
+
+      // Autoplay a cada 4s
+      useEffect(() => {
+        if (paused) return;
+        const t = setInterval(() => {
+          setDirection(1);
+          setCurrent(c => (c + 1) % total);
+        }, 4000);
+        return () => clearInterval(t);
+      }, [paused, total]);
+
+      const variants = {
+        enter:  dir => ({ x: dir > 0 ?  60 : -60, opacity: 0 }),
+        center:      ({ x: 0,                      opacity: 1 }),
+        exit:   dir => ({ x: dir > 0 ? -60 :  60, opacity: 0 }),
+      };
 
       return (
-        <section id="nichos" className="py-32 overflow-hidden" aria-label="Atuação por nicho">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <FadeIn><h2 className="font-serif text-4xl md:text-5xl text-[#324D3F]">Atuação por Nicho</h2></FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="text-gray-500 font-light max-w-sm text-sm">
-                Estéticas sob medida. Cada profissão exige uma comunicação visual única para gerar desejo e autoridade.
-                <br/><span className="text-xs mt-2 block italic text-gray-400">Deslize para explorar</span>
-              </p>
-            </FadeIn>
-          </div>
-          <div className="relative pl-6 md:pl-12 max-w-[100vw]">
-            <motion.div ref={containerRef}
-              className="cursor-grab active:cursor-grabbing overflow-hidden"
-              whileTap={{ cursor: "grabbing" }} role="list">
-              <motion.div drag="x" dragConstraints={{ right: 0, left: -dragWidth }}
-                dragElastic={0.1} dragTransition={{ bounceStiffness: 100, bounceDamping: 20 }}
-                className="flex gap-6 pr-12 w-max">
-                {NICHES.map((niche, index) => (
-                  <motion.div key={niche.id} role="listitem"
-                    initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true, margin: "-10%" }}
-                    transition={{ duration: 0.8, delay: index * 0.1, ease: "easeOut" }}
-                    className="w-[65vw] sm:w-[240px] md:w-[270px] lg:w-[300px] xl:w-[320px] flex-shrink-0 group"
-                  >
-                    <div className={`w-full h-[320px] md:h-[400px] bg-gradient-to-br ${niche.color} relative p-6 flex flex-col justify-between overflow-hidden transition-all duration-700 group-hover:shadow-2xl`}>
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-700" aria-hidden="true" />
-                      <span className="inline-block px-3 py-1 border border-[#324D3F]/20 text-[#324D3F] text-[10px] uppercase tracking-widest w-max relative z-10">{niche.tag}</span>
-                      <div className="relative z-10 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                        <h3 className="font-serif text-3xl text-[#324D3F] mb-3">{niche.title}</h3>
-                        <p className="text-[#324D3F]/80 font-light text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">{niche.desc}</p>
-                      </div>
-                    </div>
-                  </motion.div>
+        <section id="nichos" className="py-32" aria-label="Atuação por nicho">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+
+            {/* Cabeçalho */}
+            <div className="mb-16 flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <FadeIn>
+                <h2 className="font-serif text-4xl md:text-5xl text-[#324D3F]">Atuação por Nicho</h2>
+              </FadeIn>
+              <FadeIn delay={0.2}>
+                <p className="text-gray-500 font-light max-w-sm text-sm">
+                  Estéticas sob medida. Cada profissão exige uma comunicação visual única para gerar desejo e autoridade.
+                </p>
+              </FadeIn>
+            </div>
+
+            {/* Card animado */}
+            <div className="overflow-hidden">
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={current}
+                  custom={direction}
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+                  className={`w-full h-[320px] md:h-[420px] bg-gradient-to-br ${NICHES[current].color} relative p-10 md:p-16 flex flex-col justify-between`}
+                >
+                  {/* Tag */}
+                  <span className="inline-block px-3 py-1 border border-[#324D3F]/20 text-[#324D3F] text-[10px] uppercase tracking-widest w-max">
+                    {NICHES[current].tag}
+                  </span>
+
+                  {/* Conteúdo */}
+                  <div>
+                    <h3 className="font-serif text-5xl md:text-6xl text-[#324D3F] mb-4">
+                      {NICHES[current].title}
+                    </h3>
+                    <p className="text-[#324D3F]/70 font-light text-sm md:text-base max-w-md">
+                      {NICHES[current].desc}
+                    </p>
+                  </div>
+
+                  {/* Contador editorial */}
+                  <span className="absolute top-10 right-10 md:top-16 md:right-16 font-serif text-[#324D3F]/25 text-sm tracking-widest select-none" aria-hidden="true">
+                    {String(current + 1).padStart(2, "0")} / {String(total).padStart(2, "0")}
+                  </span>
+
+                  {/* Barra de progresso do autoplay */}
+                  {!paused && (
+                    <motion.div
+                      key={`bar-${current}`}
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 4, ease: "linear" }}
+                      className="absolute bottom-0 left-0 h-[2px] w-full bg-[#324D3F]/20 origin-left"
+                      aria-hidden="true"
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Controles: seta esquerda + bolinhas + seta direita */}
+            <div className="flex items-center justify-center gap-8 mt-8">
+
+              {/* Seta esquerda */}
+              <button type="button" onClick={goPrev} aria-label="Nicho anterior"
+                className="w-10 h-10 border border-[#324D3F]/20 flex items-center justify-center text-[#324D3F] hover:bg-[#324D3F] hover:text-[#F7F5F1] hover:border-[#324D3F] transition-all duration-300">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+
+              {/* Bolinhas */}
+              <div className="flex items-center gap-3" role="tablist" aria-label="Selecionar nicho">
+                {NICHES.map((niche, i) => (
+                  <button key={i} type="button" role="tab"
+                    aria-selected={i === current}
+                    aria-label={`Ver ${niche.title}`}
+                    onClick={() => goTo(i)}
+                    className={`rounded-full transition-all duration-500 ${
+                      i === current
+                        ? "w-6 h-[6px] bg-[#324D3F]"
+                        : "w-[6px] h-[6px] bg-[#324D3F]/25 hover:bg-[#324D3F]/50"
+                    }`}
+                  />
                 ))}
-              </motion.div>
-            </motion.div>
-            <div className="absolute top-0 right-0 w-16 md:w-32 h-full bg-gradient-to-l from-[#F7F5F1] to-transparent pointer-events-none z-10" aria-hidden="true" />
+              </div>
+
+              {/* Seta direita */}
+              <button type="button" onClick={goNext} aria-label="Próximo nicho"
+                className="w-10 h-10 border border-[#324D3F]/20 flex items-center justify-center text-[#324D3F] hover:bg-[#324D3F] hover:text-[#F7F5F1] hover:border-[#324D3F] transition-all duration-300">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+
+            </div>
           </div>
         </section>
       );
@@ -537,11 +602,45 @@
     /* ── CONTACT FORM ── */
     function ContactForm() {
       const [status, setStatus] = useState("idle");
+      const [errors, setErrors] = useState({});
       const [fields, setFields] = useState({ name: "", email: "", message: "" });
 
-      const handleChange = (e) => setFields(prev => ({ ...prev, [e.target.id]: e.target.value }));
-      const handleSubmit = (e) => { e.preventDefault(); setStatus("success"); };
-      const handleReset  = () => { setStatus("idle"); setFields({ name: "", email: "", message: "" }); };
+      const handleChange = (e) => {
+        setFields(prev => ({ ...prev, [e.target.id]: e.target.value }));
+        if (errors[e.target.id]) setErrors(prev => ({ ...prev, [e.target.id]: "" }));
+      };
+
+      const validate = () => {
+        const newErrors = {};
+        if (!fields.name.trim())
+          newErrors.name = "Por favor, informe seu nome.";
+        if (!fields.email.trim())
+          newErrors.email = "Por favor, informe seu e-mail.";
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email))
+          newErrors.email = "E-mail inválido.";
+        if (!fields.message.trim())
+          newErrors.message = "Por favor, escreva sua mensagem.";
+        return newErrors;
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const newErrors = validate();
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          return;
+        }
+        const phoneNumber = "5531994513444";
+        const text = `Olá, JAHUB! Gostaria de falar sobre um projeto.\n\n*Nome:* ${fields.name}\n*E-mail:* ${fields.email}\n*Mensagem:* ${fields.message}`;
+        window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(text)}`, "_blank");
+        setStatus("success");
+      };
+
+      const handleReset = () => {
+        setStatus("idle");
+        setErrors({});
+        setFields({ name: "", email: "", message: "" });
+      };
 
       return (
         <AnimatePresence mode="wait">
@@ -554,7 +653,7 @@
             >
               <CheckCircleIcon className="text-[#D2AB7C]" size={40} strokeWidth={1} />
               <h3 className="font-serif text-4xl text-[#F7F5F1]">Mensagem enviada.</h3>
-              <p className="text-gray-400 font-light leading-relaxed">Obrigada pelo contato. Em breve retornaremos para dar início à transformação da sua marca.</p>
+              <p className="text-gray-400 font-light leading-relaxed">Você será redirecionado para o nosso WhatsApp. Em breve iniciaremos a transformação da sua marca.</p>
               <button type="button" onClick={handleReset}
                 className="group flex items-center gap-3 text-gray-500 hover:text-[#D2AB7C] transition-colors duration-500 uppercase tracking-widest text-xs pt-4 mt-2">
                 <span>Enviar outra mensagem</span>
@@ -566,40 +665,47 @@
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.4 }} className="space-y-10" onSubmit={handleSubmit} noValidate
             >
-              {/*
-                FIX 8 (UX/ACESSIBILIDADE): autocomplete adicionado.
-                Permite que o browser preencha os campos automaticamente,
-                reduzindo a fricção de preenchimento especialmente no mobile.
-              */}
+              {/* Nome */}
               <div className="relative group">
                 <input type="text" id="name" required maxLength="100" autoComplete="name"
                   value={fields.name} onChange={handleChange}
                   className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent"
-                  placeholder="Nome Completo" />
+                  placeholder="Nome Completo" aria-describedby={errors.name ? "error-name" : undefined} />
                 <label htmlFor="name" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
                   Nome Completo
                 </label>
+                {errors.name && (
+                  <p id="error-name" className="text-[#D2AB7C] text-[10px] mt-2 tracking-wide" role="alert">{errors.name}</p>
+                )}
               </div>
 
+              {/* Email */}
               <div className="relative group">
                 <input type="email" id="email" required maxLength="100"
                   autoComplete="email" spellCheck="false"
                   value={fields.email} onChange={handleChange}
                   className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent"
-                  placeholder="E-mail Profissional" />
+                  placeholder="E-mail Profissional" aria-describedby={errors.email ? "error-email" : undefined} />
                 <label htmlFor="email" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
                   E-mail Profissional
                 </label>
+                {errors.email && (
+                  <p id="error-email" className="text-[#D2AB7C] text-[10px] mt-2 tracking-wide" role="alert">{errors.email}</p>
+                )}
               </div>
 
+              {/* Mensagem */}
               <div className="relative group">
                 <textarea id="message" required rows={1} maxLength="1000"
                   value={fields.message} onChange={handleChange}
                   className="w-full bg-transparent border-b border-gray-700 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer placeholder-transparent resize-none min-h-[100px]"
-                  placeholder="Sua mensagem" />
+                  placeholder="Sua mensagem" aria-describedby={errors.message ? "error-message" : undefined} />
                 <label htmlFor="message" className="absolute left-0 top-4 text-gray-500 text-sm peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#D2AB7C] peer-valid:-top-4 peer-valid:text-xs peer-valid:text-gray-400 transition-all duration-300 pointer-events-none">
                   Conte-nos sobre o seu projeto
                 </label>
+                {errors.message && (
+                  <p id="error-message" className="text-[#D2AB7C] text-[10px] mt-2 tracking-wide" role="alert">{errors.message}</p>
+                )}
               </div>
 
               <button type="submit"
@@ -679,7 +785,8 @@
                 className="fixed inset-0 z-[9999] bg-[#324D3F] flex items-center justify-center pointer-events-none"
               >
                 {!imgError ? (
-                  <motion.img src="logo.png" alt="JAHUB Logo" fetchpriority="high"
+                  <motion.img src="logo.png" alt="JAHUB Logo"
+                    fetchPriority="high"
                     onError={() => setImgError(true)}
                     initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.05 }}
