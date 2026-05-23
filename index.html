@@ -26,9 +26,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Restaurando o Favicon com a imagem do Globo -->
-  <link rel="icon" type="image/png" href="image_1a6adb.png" />
-  <link rel="apple-touch-icon" href="image_1a6adb.png" />
+  <!-- Restaurando o Favicon (favicon.ico) -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="favicon.ico" />
 
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
@@ -96,10 +96,18 @@
     }
     .animate-pulse { animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite; }
 
-    /* Classe utilitária para o efeito 3D (Frente e Verso da foto) */
+    /* Efeito 3D e correção de blur (embaçado) no Safari/Celulares */
     .backface-hidden {
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
+      /* Força o celular a renderizar a imagem em alta definição */
+      -webkit-transform: translateZ(0) scale(1.0, 1.0);
+      transform: translateZ(0) scale(1.0, 1.0);
+      will-change: transform;
+    }
+    .preserve-3d {
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
     }
   </style>
 </head>
@@ -399,13 +407,12 @@
                 <FadeIn direction="right">
                   <motion.div
                     onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
-                    style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                    className="relative aspect-[3/4] w-full cursor-grab active:cursor-grabbing group"
+                    style={{ rotateX, rotateY }}
+                    className="relative aspect-[3/4] w-full cursor-grab active:cursor-grabbing group preserve-3d"
                   >
                     {/* Container giratório (Flip Card) */}
                     <motion.div
-                      className="w-full h-full relative"
-                      style={{ transformStyle: "preserve-3d" }}
+                      className="w-full h-full relative preserve-3d"
                       animate={{ rotateY: isFlipped ? 180 : 0 }}
                       transition={{ type: "spring", stiffness: 50, damping: 20 }}
                       onClick={() => setIsFlipped(!isFlipped)}
@@ -419,14 +426,17 @@
                       }}
                     >
                       {/* FRENTE DA FOTO (juliana.jpg) */}
-                      <div className="absolute inset-0 backface-hidden bg-[#E8DDD2] shadow-2xl">
+                      <div className="absolute inset-0 backface-hidden bg-[#E8DDD2] shadow-2xl" style={{ transform: "rotateY(0deg)" }}>
                         <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
                           style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
                         
-                        <img src="juliana.jpg" alt="Juliana de Almeida - Fundadora da JAHUB"
-                          loading="lazy" className="w-full h-full object-cover"
-                          style={{ transform: "translateZ(10px)", filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
-                        />
+                        {/* Camada isolada para evitar o blur no celular */}
+                        <div className="absolute inset-0" style={{ transform: "translateZ(10px)" }}>
+                          <img src="juliana.jpg" alt="Juliana de Almeida - Fundadora da JAHUB"
+                            loading="lazy" className="w-full h-full object-cover"
+                            style={{ filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
+                          />
+                        </div>
                         
                         <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                           style={{ transform: "translateZ(15px)" }} aria-hidden="true" />
@@ -443,10 +453,13 @@
                         <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
                           style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
                         
-                        <img src="juliana1.jpg" alt="Juliana de Almeida - Bastidores"
-                          loading="lazy" className="w-full h-full object-cover"
-                          style={{ transform: "translateZ(10px)", filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
-                        />
+                        {/* Camada isolada para evitar o blur no celular */}
+                        <div className="absolute inset-0" style={{ transform: "translateZ(10px)" }}>
+                          <img src="juliana1.jpg" alt="Juliana de Almeida - Bastidores"
+                            loading="lazy" className="w-full h-full object-cover"
+                            style={{ filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
+                          />
+                        </div>
                         
                         <div className="absolute inset-0 bg-gradient-to-tl from-black/40 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                           style={{ transform: "translateZ(15px)" }} aria-hidden="true" />
