@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <!-- SEO & OPEN GRAPH -->
-  <title>JAHUB</title>
+  <title>JAHUB | Posicionamento Premium</title>
   <meta name="description" content="Estratégia visual para marcas que desejam ser percebidas. A JAHUB orquestra design, estética e comunicação para transmitir autoridade silenciosa. Por Juliana de Almeida." />
   <meta name="keywords" content="JAHUB, estratégia visual, posicionamento premium, identidade visual, Juliana de Almeida, design de marca, branding" />
   <meta name="author" content="Juliana de Almeida" />
@@ -26,11 +26,12 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
+  <!-- Restaurando o Favicon com a imagem do Globo -->
   <link rel="icon" type="image/png" href="image_1a6adb.png" />
   <link rel="apple-touch-icon" href="image_1a6adb.png" />
+
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
-  <!-- Tailwind Play CDN -->
   <script defer src="https://cdn.tailwindcss.com"></script>
   <!-- React 18 UMD -->
   <script defer crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -94,6 +95,12 @@
       50%        { opacity: .5; }
     }
     .animate-pulse { animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite; }
+
+    /* Classe utilitária para o efeito 3D (Frente e Verso da foto) */
+    .backface-hidden {
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
   </style>
 </head>
 <body class="loading">
@@ -332,10 +339,10 @@
     /* ── HERO ── */
     function Hero() {
       return (
-        <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+        <section className="relative min-h-screen flex items-center pt-32 pb-16 overflow-hidden">
           <div className="max-w-7xl mx-auto px-6 md:px-12 w-full relative z-10">
-            <div className="max-w-4xl">
-              <FadeIn delay={0.8}>
+            <div className="max-w-4xl mt-16 md:mt-0">
+              <FadeIn delay={0.5}>
                 <span className="block text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-6">Posicionamento Premium</span>
               </FadeIn>
               <FadeIn delay={1.0}>
@@ -369,6 +376,7 @@
 
     /* ── FOUNDER ── */
     function Founder() {
+      const [isFlipped, setIsFlipped] = useState(false);
       const x = useMotionValue(0);
       const y = useMotionValue(0);
       const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
@@ -387,21 +395,69 @@
         <section id="sobre" className="py-24 md:py-32 bg-[#F7F5F1] relative">
           <div className="max-w-7xl mx-auto px-6 md:px-12">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-              <div className="lg:col-span-5 relative" style={{ perspective: "1200px" }}>
+              <div className="lg:col-span-5 relative" style={{ perspective: "1500px" }}>
                 <FadeIn direction="right">
                   <motion.div
                     onMouseMove={handleMouseMove} onMouseLeave={handleMouseLeave}
                     style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-                    className="relative aspect-[3/4] w-full bg-[#E8DDD2] overflow-visible cursor-default group"
+                    className="relative aspect-[3/4] w-full cursor-grab active:cursor-grabbing group"
                   >
-                    <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none transition-transform duration-700 group-hover:scale-[0.98]"
-                      style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
-                    <img src="image_1ca159.png" alt="Juliana de Almeida - Fundadora da JAHUB"
-                      loading="lazy" className="w-full h-full object-cover"
-                      style={{ transform: "translateZ(10px)", filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-tr from-black/20 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700 mix-blend-overlay"
-                      style={{ transform: "translateZ(15px)" }} aria-hidden="true" />
+                    {/* Container giratório (Flip Card) */}
+                    <motion.div
+                      className="w-full h-full relative"
+                      style={{ transformStyle: "preserve-3d" }}
+                      animate={{ rotateY: isFlipped ? 180 : 0 }}
+                      transition={{ type: "spring", stiffness: 50, damping: 20 }}
+                      onClick={() => setIsFlipped(!isFlipped)}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.1}
+                      onDragEnd={(e, { offset }) => {
+                        if (offset.x < -40 || offset.x > 40) {
+                          setIsFlipped(!isFlipped);
+                        }
+                      }}
+                    >
+                      {/* FRENTE DA FOTO (juliana.jpg) */}
+                      <div className="absolute inset-0 backface-hidden bg-[#E8DDD2] shadow-2xl">
+                        <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
+                          style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
+                        
+                        <img src="juliana.jpg" alt="Juliana de Almeida - Fundadora da JAHUB"
+                          loading="lazy" className="w-full h-full object-cover"
+                          style={{ transform: "translateZ(10px)", filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
+                        />
+                        
+                        <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                          style={{ transform: "translateZ(15px)" }} aria-hidden="true" />
+                        
+                        {/* Dica visual para interagir (Aparece no Hover) */}
+                        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ transform: "translate(-50%, 0) translateZ(40px)" }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F7F5F1" strokeWidth="1.5"><path d="M17 8l4 4-4 4M7 16l-4-4 4-4M3 12h18"/></svg>
+                          <span className="text-[9px] uppercase tracking-[0.2em] text-[#F7F5F1] mt-2 font-medium">Girar Foto</span>
+                        </div>
+                      </div>
+
+                      {/* VERSO DA FOTO (juliana1.jpg) */}
+                      <div className="absolute inset-0 backface-hidden bg-[#E8DDD2] shadow-2xl" style={{ transform: "rotateY(180deg)" }}>
+                        <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
+                          style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
+                        
+                        <img src="juliana1.jpg" alt="Juliana de Almeida - Bastidores"
+                          loading="lazy" className="w-full h-full object-cover"
+                          style={{ transform: "translateZ(10px)", filter: "contrast(0.95) sepia(0.05) grayscale(0.1)" }}
+                        />
+                        
+                        <div className="absolute inset-0 bg-gradient-to-tl from-black/40 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                          style={{ transform: "translateZ(15px)" }} aria-hidden="true" />
+                          
+                        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ transform: "translate(-50%, 0) translateZ(40px)" }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F7F5F1" strokeWidth="1.5"><path d="M17 8l4 4-4 4M7 16l-4-4 4-4M3 12h18"/></svg>
+                          <span className="text-[9px] uppercase tracking-[0.2em] text-[#F7F5F1] mt-2 font-medium">Girar Foto</span>
+                        </div>
+                      </div>
+
+                    </motion.div>
                   </motion.div>
                 </FadeIn>
               </div>
@@ -708,30 +764,12 @@
       const [isLoading, setIsLoading] = useState(true);
       const [imgError, setImgError]   = useState(false);
 
-      // Inicia o Lenis (Smooth Scroll Premium)
-      useEffect(() => {
-        const lenis = new window.Lenis({
-          duration: 1.2,
-          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Curva de inércia Apple-like
-          direction: 'vertical',
-          smooth: true,
-        });
-
-        function raf(time) {
-          lenis.raf(time);
-          requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-
-        return () => { lenis.destroy(); };
-      }, []);
-
       useEffect(() => {
         document.body.classList.add("loading");
         const timer = setTimeout(() => {
           setIsLoading(false);
           document.body.classList.remove("loading");
-        }, 2200); // Um pouco mais longo para sensação cinematográfica
+        }, 2000);
         return () => { clearTimeout(timer); document.body.classList.remove("loading"); };
       }, []);
 
@@ -740,23 +778,25 @@
           <AnimatePresence>
             {isLoading && (
               <motion.div key="loader"
-                initial={{ y: 0 }} 
-                exit={{ y: "-100%" }} // Loader agora sobe como uma cortina de teatro
-                transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }} 
+                initial={{ opacity: 1 }} exit={{ opacity: 0 }}
+                transition={{ duration: 1.0, ease: [0.22, 1, 0.36, 1] }}
                 className="fixed inset-0 z-[9999] bg-[#324D3F] flex items-center justify-center pointer-events-none"
               >
                 {!imgError ? (
-                  <motion.img src="image_1a6adb.png" alt="JAHUB Logo" fetchPriority="high"
+                  <motion.img src="image_1a6adb.png" alt="JAHUB Logo"
+                    fetchPriority="high"
                     onError={() => setImgError(true)}
-                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-                    className="w-20 md:w-28 object-contain"
+                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    className="w-32 md:w-48 object-contain"
                   />
                 ) : (
                   <motion.div
-                    initial={{ opacity: 0, letterSpacing: "0em" }} animate={{ opacity: 1, letterSpacing: "0.2em" }}
-                    transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
-                    className="font-serif text-5xl md:text-6xl text-[#D2AB7C]"
+                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.05 }}
+                    transition={{ duration: 1.2, ease: "easeOut" }}
+                    className="font-serif text-5xl md:text-6xl text-[#D2AB7C] tracking-[0.2em]"
                   >
                     JAHUB
                   </motion.div>
