@@ -26,11 +26,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Favicon -->
+  <!-- Restaurando o Favicon (favicon.ico) -->
   <link rel="icon" type="image/x-icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="favicon.ico" />
 
-  <!-- Fontes -->
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Montserrat:wght@200;300;400;500&display=swap" rel="stylesheet" />
 
   <script defer src="https://cdn.tailwindcss.com"></script>
@@ -53,7 +52,7 @@
       --text-soft-black: #1A1A1A;
     }
 
-    /* O scroll-behavior nativo é desativado para o Lenis assumir e fazer a mágica */
+    /* Remoção do scroll-behavior nativo para o Lenis assumir e fazer a mágica */
     html { scroll-behavior: initial; }
 
     body {
@@ -97,10 +96,11 @@
     }
     .animate-pulse { animation: pulse 2s cubic-bezier(.4,0,.6,1) infinite; }
 
-    /* Efeito 3D e correção de blur no Safari/Celulares */
+    /* Efeito 3D e correção de blur (embaçado) no Safari/Celulares */
     .backface-hidden {
       -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
+      /* Força o celular a renderizar a imagem em alta definição */
       -webkit-transform: translateZ(0) scale(1.0, 1.0);
       transform: translateZ(0) scale(1.0, 1.0);
       will-change: transform;
@@ -157,13 +157,14 @@
       </svg>
     );
 
+    /* ── DADOS ── */
     const NICHES = [
       { id: 1, title: "Estética Avançada",  desc: "Nude, luxo clean e sensualidade refinada.",      color: "from-[#E8DDD2] to-[#D5C6B8]", tag: "Beleza"  },
-      { id: 2, title: "Advocacia",         desc: "Autoridade inquestionável em tons sóbrios.",     color: "from-[#EBE9E4] to-[#D1CFC9]", tag: "Direito" },
-      { id: 3, title: "Psicologia",        desc: "Acolhimento, respiro e tons acinzentados.",      color: "from-[#F0F2F0] to-[#DFE3E0]", tag: "Saúde"   },
-      { id: 4, title: "Nutrição",          desc: "Essência natural, clean e orgânica.",            color: "from-[#E9EDDD] to-[#DCE3CB]", tag: "Saúde"   },
-      { id: 5, title: "Lash Design",         desc: "Feminilidade, precisão e elegância.",            color: "from-[#F5E6E6] to-[#E8D5D5]", tag: "Beleza"  },
-      { id: 6, title: "Odontologia",         desc: "Precisão clínica com estética premium.",         color: "from-[#EAEFF2] to-[#D8E1E6]", tag: "Saúde"   },
+      { id: 2, title: "Advocacia",          desc: "Autoridade inquestionável em tons sóbrios.",     color: "from-[#EBE9E4] to-[#D1CFC9]", tag: "Direito" },
+      { id: 3, title: "Psicologia",         desc: "Acolhimento, respiro e tons acinzentados.",      color: "from-[#F0F2F0] to-[#DFE3E0]", tag: "Saúde"   },
+      { id: 4, title: "Nutrição",           desc: "Essência natural, clean e orgânica.",            color: "from-[#E9EDDD] to-[#DCE3CB]", tag: "Saúde"   },
+      { id: 5, title: "Lash Design",        desc: "Feminilidade, precisão e elegância.",            color: "from-[#F5E6E6] to-[#E8D5D5]", tag: "Beleza"  },
+      { id: 6, title: "Odontologia",        desc: "Precisão clínica com estética premium.",         color: "from-[#EAEFF2] to-[#D8E1E6]", tag: "Saúde"   },
     ];
 
     const SERVICES = [
@@ -180,7 +181,6 @@
       { label: "Manifesto", href: "manifesto" },
       { label: "Nichos",    href: "nichos"    },
       { label: "Serviços",  href: "servicos"  },
-      { label: "Análise IA ✨", href: "ia"    },
     ];
 
     /* ── FADEIN (Efeito Suave) ── */
@@ -250,6 +250,9 @@
               className="transform group-hover:scale-110 transition-transform duration-500">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
             </svg>
+            <span className="absolute right-full mr-4 bg-[#1A1A1A] text-[#F7F5F1] text-xs py-2 px-4 rounded opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-500 w-max hidden md:block whitespace-nowrap font-light tracking-wide">
+              Fale com a gente
+            </span>
           </MagneticButton>
         </motion.div>
       );
@@ -272,14 +275,6 @@
         return () => document.body.classList.remove("menu-open");
       }, [mobileMenuOpen]);
 
-      const handleNavClick = (e, targetId) => {
-        setMobileMenuOpen(false);
-        if(window.lenis && targetId !== '#') {
-          e.preventDefault();
-          window.lenis.scrollTo(targetId);
-        }
-      };
-
       return (
         <>
           <header className={`fixed top-0 w-full z-40 transition-all duration-700 ease-in-out ${
@@ -291,20 +286,19 @@
                 animate={{ opacity: 1 }}
                 whileHover={{ letterSpacing: "0.14em", color: "#D2AB7C" }}
                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="font-serif text-2xl text-[#324D3F] uppercase origin-left select-none"
-                onClick={(e) => handleNavClick(e, 'top')}>
+                className="font-serif text-2xl text-[#324D3F] uppercase origin-left select-none">
                 JAHUB
               </motion.a>
 
               <nav className="hidden md:flex items-center gap-10">
                 {NAV_ITEMS.map((item, i) => (
-                  <a key={i} href={`#${item.href}`} onClick={(e) => handleNavClick(e, `#${item.href}`)}
+                  <a key={i} href={`#${item.href}`}
                     className="text-xs uppercase tracking-[0.2em] text-gray-500 hover:text-[#324D3F] transition-colors duration-500 relative group">
                     {item.label}
                     <span className="absolute -bottom-2 left-0 w-0 h-[1px] bg-[#324D3F] transition-all duration-500 group-hover:w-full"></span>
                   </a>
                 ))}
-                <a href="#contato" onClick={(e) => handleNavClick(e, '#contato')}
+                <a href="#contato"
                   className="text-xs uppercase tracking-[0.2em] text-[#324D3F] border-b border-[#324D3F]/30 pb-1 hover:border-[#324D3F] transition-all duration-500">
                   Contato
                 </a>
@@ -335,7 +329,7 @@
                 <nav className="flex flex-col items-center gap-8">
                   {[...NAV_ITEMS, { label: "Contato", href: "contato" }].map((item, i) => (
                     <motion.a key={i} href={`#${item.href}`}
-                      onClick={(e) => handleNavClick(e, `#${item.href}`)}
+                      onClick={() => setMobileMenuOpen(false)}
                       initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
                       className="font-serif text-4xl text-[#324D3F] hover:text-[#D2AB7C] hover:tracking-wider transition-all duration-500">
@@ -416,6 +410,7 @@
                     style={{ rotateX, rotateY }}
                     className="relative aspect-[3/4] w-full cursor-grab active:cursor-grabbing group preserve-3d"
                   >
+                    {/* Container giratório (Flip Card) */}
                     <motion.div
                       className="w-full h-full relative preserve-3d"
                       animate={{ rotateY: isFlipped ? 180 : 0 }}
@@ -430,11 +425,12 @@
                         }
                       }}
                     >
-                      {/* FRENTE DA FOTO */}
+                      {/* FRENTE DA FOTO (juliana.jpg) */}
                       <div className="absolute inset-0 backface-hidden bg-[#E8DDD2] shadow-2xl" style={{ transform: "rotateY(0deg)" }}>
                         <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
                           style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
                         
+                        {/* Camada isolada para evitar o blur no celular */}
                         <div className="absolute inset-0" style={{ transform: "translateZ(10px)" }}>
                           <img src="juliana.jpg" alt="Juliana de Almeida - Fundadora da JAHUB"
                             loading="lazy" className="w-full h-full object-cover"
@@ -445,17 +441,19 @@
                         <div className="absolute inset-0 bg-gradient-to-tr from-black/40 to-transparent pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
                           style={{ transform: "translateZ(15px)" }} aria-hidden="true" />
                         
+                        {/* Dica visual para interagir (Aparece no Hover) */}
                         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ transform: "translate(-50%, 0) translateZ(40px)" }}>
                           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F7F5F1" strokeWidth="1.5"><path d="M17 8l4 4-4 4M7 16l-4-4 4-4M3 12h18"/></svg>
                           <span className="text-[9px] uppercase tracking-[0.2em] text-[#F7F5F1] mt-2 font-medium">Girar Foto</span>
                         </div>
                       </div>
 
-                      {/* VERSO DA FOTO */}
+                      {/* VERSO DA FOTO (juliana1.jpg) */}
                       <div className="absolute inset-0 backface-hidden bg-[#E8DDD2] shadow-2xl" style={{ transform: "rotateY(180deg)" }}>
                         <div className="absolute inset-0 border-[1px] border-[#324D3F]/30 m-4 z-20 pointer-events-none"
                           style={{ transform: "translateZ(30px)" }} aria-hidden="true" />
                         
+                        {/* Camada isolada para evitar o blur no celular */}
                         <div className="absolute inset-0" style={{ transform: "translateZ(10px)" }}>
                           <img src="juliana1.jpg" alt="Juliana de Almeida - Bastidores"
                             loading="lazy" className="w-full h-full object-cover"
@@ -652,148 +650,6 @@
       );
     }
 
-    /* ── BRAND ANALYZER (Simulação Inteligente de IA) ── */
-    function BrandAnalyzer() {
-      const [prompt, setPrompt] = useState("");
-      const [loading, setLoading] = useState(false);
-      const [result, setResult] = useState(null);
-
-      const handleAnalyze = (e) => {
-        e.preventDefault();
-        if (!prompt.trim()) return;
-        setLoading(true); 
-        setResult(null);
-
-        // Simula o tempo de resposta de uma IA (2.5 segundos)
-        setTimeout(() => {
-          const text = prompt.toLowerCase();
-          
-          // Resposta Padrão (Luxo / Criador)
-          let diag = {
-            archetype: "O Criador",
-            tone: "Inspirador, sofisticado e visionário.",
-            colors: ["#F7F5F1", "#324D3F", "#D2AB7C"],
-            advice: "A sua marca deve focar-se na inovação e na exclusividade. Mostre o processo por trás da perfeição."
-          };
-
-          // Respostas Inteligentes baseadas em palavras-chave
-          if (text.includes("advogad") || text.includes("direito") || text.includes("lei") || text.includes("juridic")) {
-            diag = {
-              archetype: "O Governante",
-              tone: "Autoritário, seguro, sóbrio e inquestionável.",
-              colors: ["#1A1A1A", "#EBE9E4", "#8C7A6B"],
-              advice: "A sua comunicação deve transmitir segurança e poder absoluto. O minimalismo reforça a sua autoridade silenciosa."
-            };
-          } else if (text.includes("médic") || text.includes("saúde") || text.includes("clínic") || text.includes("odontolog")) {
-            diag = {
-              archetype: "O Cuidador / O Sábio",
-              tone: "Acolhedor, preciso, limpo e empático.",
-              colors: ["#EAEFF2", "#324D3F", "#D8E1E6"],
-              advice: "O alto padrão na saúde comunica-se através de espaços em branco e precisão. Evite excesso de informações visuais."
-            };
-          } else if (text.includes("estétic") || text.includes("belez") || text.includes("lash") || text.includes("maqui")) {
-            diag = {
-              archetype: "O Amante",
-              tone: "Sensual, elegante, magnético e intimista.",
-              colors: ["#E8DDD2", "#D5C6B8", "#1A1A1A"],
-              advice: "Aposte em tons nude e texturas visuais que evoquem a pele. A sua marca deve despertar desejo imediato."
-            };
-          } else if (text.includes("arquitet") || text.includes("design") || text.includes("interiores") || text.includes("decor")) {
-            diag = {
-              archetype: "O Criador / O Mago",
-              tone: "Minimalista, estruturado e vanguardista.",
-              colors: ["#2C2C2C", "#D2AB7C", "#F0F0F0"],
-              advice: "Deixe o seu portfólio respirar. A tipografia e as linhas retas devem ser os grandes protagonistas da sua identidade."
-            };
-          }
-
-          setResult(diag);
-          setLoading(false);
-        }, 2500);
-      };
-
-      return (
-        <section id="ia" className="py-32 bg-[#324D3F] text-[#F7F5F1] relative border-t border-[#F7F5F1]/10">
-          <div className="max-w-7xl mx-auto px-6 md:px-12 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <FadeIn>
-                <span className="text-xs uppercase tracking-[0.3em] text-[#D2AB7C] mb-4 block">Inteligência Estratégica ✨</span>
-                <h2 className="font-serif text-4xl md:text-5xl leading-tight mb-6">
-                  Descubra a essência <br/>da sua marca.
-                </h2>
-                <p className="text-[#F7F5F1]/70 font-light leading-relaxed mb-10">
-                  Descreva brevemente o seu negócio, os seus valores e a sua audiência. A nossa inteligência fará uma análise premium do seu arquétipo e identidade visual ideal.
-                </p>
-                <form onSubmit={handleAnalyze} className="space-y-6">
-                  <div className="relative group">
-                    <textarea required rows="3" maxLength="500" value={prompt} onChange={(e) => setPrompt(e.target.value)}
-                      className="w-full bg-transparent border-b border-[#F7F5F1]/30 py-4 text-[#F7F5F1] focus:outline-none focus:border-[#D2AB7C] transition-colors duration-500 peer resize-none"
-                      placeholder="Ex: Sou arquiteta focada em projetos residenciais de luxo. Quero transmitir minimalismo, conforto e exclusividade." />
-                  </div>
-                  <button type="submit" disabled={loading}
-                    className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-[#D2AB7C] text-[#D2AB7C] hover:bg-[#D2AB7C] hover:text-[#1A1A1A] transition-all duration-500 text-xs uppercase tracking-[0.2em] group disabled:opacity-50 disabled:cursor-not-allowed">
-                    <span>{loading ? "A Analisar..." : "Analisar com IA ✨"}</span>
-                    {!loading && <ArrowRightIcon size={16} strokeWidth={1} className="transform group-hover:translate-x-1 transition-transform duration-500" />}
-                  </button>
-                </form>
-              </FadeIn>
-            </div>
-            
-            <div className="relative min-h-[400px]">
-              <AnimatePresence mode="wait">
-                {result ? (
-                  <motion.div key="result" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.6 }}
-                    className="bg-[#E8DDD2] p-8 md:p-12 text-[#1A1A1A] shadow-2xl relative overflow-hidden rounded-lg"
-                  >
-                    <div className="absolute top-0 left-0 w-1 h-full bg-[#D2AB7C]"></div>
-                    <h3 className="font-serif text-3xl mb-6">Diagnóstico Premium ✨</h3>
-                    
-                    <div className="space-y-6">
-                      <div>
-                        <h4 className="text-[10px] uppercase tracking-widest text-[#324D3F] mb-1">Arquétipo Dominante</h4>
-                        <p className="font-serif text-xl">{result.archetype}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-[10px] uppercase tracking-widest text-[#324D3F] mb-1">Tom de Voz</h4>
-                        <p className="font-light text-sm">{result.tone}</p>
-                      </div>
-                      <div>
-                        <h4 className="text-[10px] uppercase tracking-widest text-[#324D3F] mb-3">Paleta de Cores Sugerida</h4>
-                        <div className="flex gap-4">
-                          {result.colors?.map((color, idx) => (
-                            <div key={idx} className="flex flex-col items-center gap-2">
-                              <div className="w-10 h-10 rounded-full border border-gray-300 shadow-sm" style={{ backgroundColor: color }}></div>
-                              <span className="text-[9px] uppercase tracking-wider">{color}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                      <div>
-                        <h4 className="text-[10px] uppercase tracking-widest text-[#324D3F] mb-1">Conselho Estratégico</h4>
-                        <p className="font-light text-sm italic border-l-2 border-[#D2AB7C] pl-4">{result.advice}</p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ) : (
-                  <motion.div key="empty" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="w-full h-full border border-[#F7F5F1]/10 flex flex-col items-center justify-center text-center p-8 opacity-40 rounded-lg"
-                  >
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D2AB7C" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="mb-4">
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="M12 16v-4"/>
-                      <path d="M12 8h.01"/>
-                    </svg>
-                    <p className="font-serif text-2xl text-[#F7F5F1]">A aguardar detalhes...</p>
-                    <p className="text-sm font-light tracking-wide mt-2">O diagnóstico da sua marca surgirá aqui.</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </section>
-      );
-    }
-
     /* ── CONTACT FORM ── */
     function ContactForm() {
       const [status, setStatus] = useState("idle");
@@ -891,7 +747,7 @@
                   <p className="text-gray-400 font-light max-w-sm mb-12">
                     Dê o primeiro passo para uma presença digital que reflete o real valor do seu trabalho.
                   </p>
-                  <MagneticButton href="https://wa.me/5531994513444" ariaLabel="Chamar no WhatsApp"
+                  <MagneticButton href="https://wa.me/5531994513444"
                     className="inline-flex items-center justify-center gap-3 px-8 py-4 border border-gray-700 text-[#F7F5F1] hover:border-[#D2AB7C] hover:text-[#D2AB7C] transition-all duration-500 text-xs uppercase tracking-[0.2em] group">
                     <span>Chamar no WhatsApp</span>
                     <ArrowUpRightIcon size={16} strokeWidth={1} className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-500" />
@@ -921,27 +777,6 @@
       const [isLoading, setIsLoading] = useState(true);
       const [imgError, setImgError]   = useState(false);
 
-      // INICIALIZAÇÃO DO LENIS (SMOOTH SCROLL)
-      useEffect(() => {
-        if (window.Lenis) {
-          window.lenis = new window.Lenis({
-            duration: 1.2,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smooth: true,
-          });
-
-          function raf(time) {
-            window.lenis.raf(time);
-            requestAnimationFrame(raf);
-          }
-          requestAnimationFrame(raf);
-        }
-        return () => {
-          if (window.lenis) window.lenis.destroy();
-        };
-      }, []);
-
-      // TELA DE CARREGAMENTO
       useEffect(() => {
         document.body.classList.add("loading");
         const timer = setTimeout(() => {
@@ -961,7 +796,8 @@
                 className="fixed inset-0 z-[9999] bg-[#324D3F] flex items-center justify-center pointer-events-none"
               >
                 {!imgError ? (
-                  <motion.img src="logo.png" alt="JAHUB Logo" fetchPriority="high"
+                  <motion.img src="image_1a6adb.png" alt="JAHUB Logo"
+                    fetchPriority="high"
                     onError={() => setImgError(true)}
                     initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.05 }}
@@ -989,7 +825,6 @@
             <Manifesto />
             <NicheCarousel />
             <Services />
-            <BrandAnalyzer />
           </main>
           <Footer />
           <FloatingWhatsApp />
@@ -1001,3 +836,4 @@
   </script>
 </body>
 </html>
+
